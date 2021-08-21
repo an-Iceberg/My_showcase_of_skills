@@ -33,7 +33,7 @@ int findMedianOfTwoSortedArrays(std::vector<int> numbers1, std::vector<int> numb
 // === Tests the median calculator ===
 void test(int testIndex, std::vector<int> vector1, std::vector<int> vector2, int median)
 {
-    if (!(median == findMedianOfTwoSortedArrays(vector1, vector2)))
+    if (median != findMedianOfTwoSortedArrays(vector1, vector2))
         std::cout << testIndex << " failed, returned:" << findMedianOfTwoSortedArrays(vector1, vector2) << " expected:" << median << std::endl;
     else
         std::cout << testIndex << " passed" << std::endl;
