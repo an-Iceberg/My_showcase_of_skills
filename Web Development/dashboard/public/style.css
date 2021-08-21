@@ -1,0 +1,131 @@
+:root{
+    scrollbar-color: indigo coral ;
+    scrollbar-width: thin;
+    font-size: 16px;
+}
+* {
+    padding: 0;
+    margin: 0;
+}
+/* Fonts: Cinzel, Playfair Display, Cormorant Garamond */
+/* colour-palette: navy, indigo, blueviolet, coral, mediumvioletred */
+
+body{
+    background: linear-gradient(145deg, navy, indigo, blueviolet, coral, mediumvioletred);
+}
+
+/* Header */
+header{
+    background: linear-gradient(145deg, navy, indigo, blueviolet, coral, mediumvioletred);
+}
+header h1{
+    font-family: 'Cinzel', 'serif';
+    text-align: center;
+    font-size: 3.5rem;
+    font-weight: normal;
+    letter-spacing: 1.25rem;
+    /* text-gradient */
+    background: linear-gradient(to bottom, black 35%, coral);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+header h2{
+    font-family: 'Playfair Display', 'serif';
+    text-align: center;
+    font-weight: normal;
+    /* text-gradient */
+    background: linear-gradient(to bottom, black 35%, mediumvioletred);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+header h3{
+    font-family: 'Cormorant Garamond', 'serif';
+    text-align: center;
+    font-weight: normal;
+    margin-top: 5px;
+    padding-bottom: 10px;
+}
+/* /Header */
+
+/* Nav */
+nav{
+    position: sticky;
+    top: 0;
+
+}
+nav ul{
+    list-style-type: none;
+    background: linear-gradient(to bottom, blueviolet, indigo);
+    text-align: center;
+    padding: 10px;
+}
+nav li{
+    display: inline-block;
+    transition: all 0.3s ease-in-out;
+}
+nav li a{
+    font-family: 'Cormorant Garamond', 'serif';
+    font-weight: bold;
+    font-size: 1.8rem;
+    text-decoration: none;
+    padding: 10px;
+    transition: all 0.3s;
+    color: coral;
+}
+nav li a:hover{
+    color: mediumvioletred;
+}
+#selected{
+    color: mediumvioletred;
+}
+/* /Nav */
+
+/* Article */
+/* TODO(me): redo this */
+main{
+    display: grid;
+}
+main article{
+    box-sizing: border-box;
+    margin: 20px 0 0 40px;
+    position: relative;
+    float: left;
+    width: 30%;
+    background: linear-gradient(145deg, blueviolet, mediumvioletred);
+    text-align: center;
+}
+.title{
+    width: 100%;
+    font-family: 'Cinzel', 'serif';
+}
+.author, .date{
+    display: inline;
+    text-align: left;
+    font-family: 'Playfair Display', 'serif';
+}
+article img{
+    width: 80%;
+}
+.description{
+    font-family: 'Cormorant Garamond', 'serif';
+}
+.learn_more{
+    cursor: pointer;
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+}
+/* /Article */
+
+.spacer{
+    aspect-ratio: 16/9;
+    width: 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+}
+.layer1{
+    background-image: url('wave-haikei.svg');
+}
