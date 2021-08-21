@@ -1,0 +1,73 @@
+:root{
+    font-size: 16px;
+    font-family: 'Gill Sans', 'Gill Sans MT', 'Calibri', 'Trebuchet MS', sans-serif;
+    --headerHeight: 150px;
+    scrollbar-width: thin;
+}
+body{
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+}
+header, aside, article{
+    border: 2px solid black;
+    margin: 10px;
+}
+aside, section{
+    display: inline-block;
+}
+
+/* Header */
+header{
+    height: var(--headerHeight);
+}
+header img{
+    margin: 0 50px 0 10px;
+    height: var(--headerHeight);
+}
+header div{
+    margin: 10px 10px 0 0;
+    height: calc(var(--headerHeight) + 2px);
+    width: calc(100% - 359px);
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    text-align: left;
+    color: cornflowerblue;
+    background: black;
+}
+header div h1{
+    margin: 15px 0;
+    font-size: 6.5rem;
+    display: flex;
+    justify-content: center;
+}
+
+/* Side pannel */
+aside{
+    position: absolute;
+    width: 125px;
+    height: calc(100vh - (var(--headerHeight) + 50px));
+}
+aside ul{
+    list-style-type: none;
+    padding-left: 10px;
+}
+aside ul li{
+    margin: 10px 0;
+}
+aside ul li a{
+    text-decoration: none;
+}
+
+/* Section with articles */
+section{
+    margin-left: 145px;
+    width: calc(100vw - 153px);
+}
+section article{
+    height: max-content;
+}
+article * {
+    margin: 10px;
+}

@@ -1,0 +1,140 @@
+:root{
+    font-size: 16px;
+    scrollbar-color: olivedrab white;
+    scrollbar-width: thin;
+    --hfHeight: 78px;
+    --hfBackgroundColour: olivedrab;
+    --asideWidth: 135px;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+/* Body */
+body{
+    overflow-x: hidden;
+    margin: 0;
+}
+body * {
+    margin: 0;
+    padding: 0;
+}
+h2{
+    font-size: 1.5rem;
+    margin: 10px;
+}
+p{
+    text-align: justify;
+}
+
+/* Header */
+header{
+    position: fixed;
+    width: 100%;
+    top: 0;
+    height: var(--hfHeight);
+    background: url('../images/pretty_flower_2.jpg') no-repeat;
+    background-size: 50%;
+}
+header * {
+    display: inline;
+}
+header>a{
+    z-index: 2;
+    position: absolute;
+    top: 0;
+    right: 5px;
+}
+header h1{
+    position: absolute;
+    font-size: 3.5rem;
+    font-weight: normal;
+    top: -10px;
+    color: wheat;
+    letter-spacing: 10px;
+}
+header nav{
+    z-index: 2;
+    display: block;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+header ul{
+    display: block;
+    background: var(--hfBackgroundColour);
+    padding: 5px 30px;
+    font-size: 1.2rem;
+}
+header li{
+    padding: 0 5px;
+}
+header li a{
+    text-decoration: none;
+}
+header div{
+    z-index: 1;
+    display: inline-block;
+    position: relative;
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(to right, #ffffff00, #ffffffff 50%);
+}
+
+/* Main */
+main{
+    margin: var(--hfHeight) 0 40px 0;
+}
+
+/* Article */
+article, aside{
+    display: block;
+}
+article h2, article a, aside * {
+    color: salmon;
+}
+article{
+    padding-top: 0.1px;
+    width: calc(100vw - (var(--asideWidth) + 53px));
+}
+article img{
+    height: 200px;
+    float: right;
+    border: 10px double var(--hfBackgroundColour);
+    margin: 0 0 10px 20px;
+}
+article h2, article p{
+    margin: 20px;
+}
+
+/* Aside */
+aside{
+    padding: 20px;
+    width: var(--asideWidth);
+    position: fixed;
+    right: 0;
+    top: 55px;
+    text-align: left; /* Doesn't seem to work */
+}
+aside h2{
+    margin-left: 0;
+    margin-top: 20px;
+}
+aside li{
+    list-style-type: none;
+}
+aside>a{
+    display: block;
+}
+
+/* Footer */
+footer{
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    padding: 10px;
+    /* height: var(--hfHeight); */
+    background: var(--hfBackgroundColour);
+}
+footer p{
+    position: static;
+    margin-left: 86.5vw;
+}

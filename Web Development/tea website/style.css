@@ -1,0 +1,156 @@
+:root{
+    font-size: 16px;
+    font-family: 'Gill Sans', 'Gill Sans MT', 'Calibri', 'Trebuchet MS', sans-serif;
+    scrollbar-color: black white;
+    scrollbar-width: thin;
+}
+body{
+    overflow-x: hidden;
+    margin: 0;
+}
+
+header, aside, main{
+    background: white;
+}
+
+/* Header */
+header{
+    width: 100%;
+    height: 170px;
+}
+header *{
+    display: inline-block;
+}
+header h1, h2, p{
+    display: block;
+    margin: 0;
+}
+header img{
+    height: 150px;
+    margin-left: 200px;
+}
+header div{
+    position: relative;
+    bottom: 40px;
+}
+header div p{
+    font-style: oblique;
+}
+header ul{
+    display: block;
+    position: absolute;
+    top: 170px;
+    margin: 0;
+    padding: 0 0 0 200px;
+    width: 100%;
+    background: black;
+}
+header li{
+    margin: 7px 40px 7px 0;
+    list-style-type: none;
+}
+header a{
+    font-size: 1.25rem;
+    color: wheat;
+    text-decoration: none;
+}
+header address{
+    position: absolute;
+    top: 60px;
+    right: 200px;
+    text-align: right;
+    font-style: normal;
+}
+
+/* Section */
+body>section{
+    padding-top: 38px;
+    background: url('./images/background.jpg') fixed;
+    background-size: contain;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+body>section img{
+    width: 500px;
+    margin: 20px;
+}
+
+/* Main */
+main aside, main section, main section article, main address{
+    box-sizing: border-box;
+    padding: 10px;
+}
+main section article{
+    padding: 10px 40px 10px 0;
+}
+main section article img{
+    outline: 10px solid #00000055;
+    outline-offset: -9px;
+}
+main{
+    margin: 0 200px 30px 200px;
+    box-sizing: border-box;
+}
+main h2, main img, main p{
+    margin: 20px 0 0 0;
+}
+main section article img{
+    width: 100%;
+}
+main section{
+    background: white;
+    display: inline;
+}
+main img{
+    width: 200px;
+}
+main aside{
+    float: left;
+    width: 35%;
+    height: 100%;
+}
+main aside form input{
+    width: 250px;
+}
+#send_button{
+    margin-top: 20px;
+    display: block;
+    width: 100px;
+    height: 30px;
+    font-size: 0.85rem;
+    background: olivedrab;
+    border-radius: 10px;
+}
+#totd{
+    font-size: 1.2rem;
+}
+main section{
+    float: left;
+    width: 65%;
+}
+main section article{
+    float: left;
+    width: 33.33%;
+}
+main address{
+    float: left;
+    width: 30%;
+}
+main address h2, main address p{
+    margin: 0 0 10px 0;
+}
+input, textarea{
+    font-size: 0.9rem;
+    font-family: 'Gill Sans', 'Gill Sans MT', 'Calibri', 'Trebuchet MS', sans-serif;
+}
+main>img{
+    width: 380px;
+}
+
+/* Footer */
+footer{
+    padding: 30px 0;
+    background: lightgray;
+    text-align: center;
+}
