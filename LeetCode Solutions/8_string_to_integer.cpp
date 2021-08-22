@@ -10,9 +10,7 @@ int myAtoi(std::string input)
     for (int index = 0; index < input.size(); index++)
     {
         if (sign && input[index] == ' ')
-        {
             continue;
-        }
 
         if (sign && input[index] == '+')
         {
@@ -57,14 +55,10 @@ int myAtoi(std::string input)
     }
 
     if (number > 2147483648)
-    {
         number = 2147483648;
-    }
 
     if (!positive)
-    {
         number = -number;
-    }
 
     return number;
 }
