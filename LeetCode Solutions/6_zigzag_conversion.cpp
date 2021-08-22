@@ -61,4 +61,5 @@ int main()
     // My own tests
     test(3, "avocadowatermelon", 2, "aoaoaemlnvcdwtreo");
     test(4, "sneezingelectroninthefridge", 5, "seidnglnnigeneotreeicrhfzte");
+    return 0;
 }
