@@ -2,6 +2,7 @@
     scrollbar-color: indigo coral ;
     scrollbar-width: thin;
     font-size: 16px;
+    --bgcolour: linear-gradient(145deg, navy, indigo, blueviolet, coral, mediumvioletred);
 }
 * {
     padding: 0;
@@ -17,7 +18,7 @@ body{
 
 /* Header */
 header{
-    background: linear-gradient(145deg, navy, indigo, blueviolet, coral, mediumvioletred);
+    background: var(--bgcolour);
 }
 header h1{
     font-family: 'Cinzel', 'serif';
@@ -81,29 +82,17 @@ nav li a:hover{
 #selected{
     color: mediumvioletred;
 }
-@media only screen and (max-width: 775px) {
-    nav{
-        position: static;
-    }
-    nav li{
-        display: block;
-        margin: 10px 0;
-    }
-    main{
-        display: block; /* Make this work */
-    }
-}
 /* /Nav */
 
 /* Article */
-main{
+#main{
     margin: 40px;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     column-gap: 40px;
     row-gap: 40px;
 }
-main article{
+#main article{
     box-sizing: border-box;
     position: relative;
     padding: 20px 20px 40px 20px;
@@ -137,8 +126,58 @@ article img{
     font-size: 25px;
     font-weight: bold;
     color: mediumvioletred;
-    background: linear-gradient(145deg, navy, indigo, blueviolet, coral, mediumvioletred);
+    background: var(--bgcolour);
     border: 2px solid indigo;
     border-radius: 20px;
 }
 /* /Article */
+
+/* Contact page */
+main h1{
+    margin-top: 20px;
+    font-family: 'Cinzel', 'serif';
+    justify-content: center;
+    text-align: center;
+    font-weight: normal;
+    color: mediumvioletred;
+}
+input, textarea{
+    font-family: 'Cormorant Garamond', 'serif';
+    font-size: 1.5rem;
+    background: var(--bgcolour);
+    color: wheat;
+    border: 3px ridge wheat;
+    margin-left: 30vw;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 5px;
+}
+input{
+    width: 25vw;
+}
+#send{
+    cursor: pointer;
+}
+/* /Contact page */
+
+@media only screen and (max-width: 775px) {
+    nav{
+        position: static;
+    }
+    nav ul{
+        padding: 0;
+    }
+    nav li{
+        display: block;
+        margin: 0;
+        padding: 10px 0;
+        background: linear-gradient(to bottom, blueviolet, indigo);
+    }
+    main{
+        display: block;
+        padding-bottom: 0;
+    }
+    main article{
+        margin-bottom: 40px;
+    }
+}
