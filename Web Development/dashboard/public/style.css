@@ -53,7 +53,6 @@ header h3{
 nav{
     position: sticky;
     top: 0;
-
 }
 nav ul{
     list-style-type: none;
@@ -80,20 +79,30 @@ nav li a:hover{
 #selected{
     color: mediumvioletred;
 }
+@media only screen and (max-width: 775px) {
+    nav{
+        position: static;
+    }
+    nav li{
+        display: block;
+        margin: 10px 0;
+    }
+    main{
+        display: block;
+    }
+}
 /* /Nav */
 
 /* Article */
-/* TODO(me): redo this */
 main{
     display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
 }
 main article{
     box-sizing: border-box;
-    margin: 20px 0 0 40px;
     position: relative;
-    float: left;
-    width: 30%;
-    background: linear-gradient(145deg, blueviolet, mediumvioletred);
+    width: 100%;
+    background: linear-gradient(145deg, blueviolet,coral, mediumvioletred);
     text-align: center;
 }
 .title{
@@ -118,14 +127,3 @@ article img{
     bottom: 10px;
 }
 /* /Article */
-
-.spacer{
-    aspect-ratio: 16/9;
-    width: 100%;
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: cover;
-}
-.layer1{
-    background-image: url('wave-haikei.svg');
-}
