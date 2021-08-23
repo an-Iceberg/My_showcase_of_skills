@@ -37,6 +37,48 @@ export function home(request: Request, responseHome: Response) {
                 urlToImage2: news.articles[2].urlToImage,
                 description2: news.articles[2].description,
 
+                title3: news.articles[3].title,
+                author3: news.articles[3].author,
+                publishedAt3: news.articles[3].publishedAt,
+                url3: news.articles[3].url,
+                urlToImage3: news.articles[3].urlToImage,
+                description3: news.articles[3].description,
+
+                title4: news.articles[4].title,
+                author4: news.articles[4].author,
+                publishedAt4: news.articles[4].publishedAt,
+                url4: news.articles[4].url,
+                urlToImage4: news.articles[4].urlToImage,
+                description4: news.articles[4].description,
+
+                title5: news.articles[5].title,
+                author5: news.articles[5].author,
+                publishedAt5: news.articles[5].publishedAt,
+                url5: news.articles[5].url,
+                urlToImage5: news.articles[5].urlToImage,
+                description5: news.articles[5].description,
+
+                title6: news.articles[6].title,
+                author6: news.articles[6].author,
+                publishedAt6: news.articles[6].publishedAt,
+                url6: news.articles[6].url,
+                urlToImage6: news.articles[6].urlToImage,
+                description6: news.articles[6].description,
+
+                title7: news.articles[7].title,
+                author7: news.articles[7].author,
+                publishedAt7: news.articles[7].publishedAt,
+                url7: news.articles[7].url,
+                urlToImage7: news.articles[7].urlToImage,
+                description7: news.articles[7].description,
+
+                title8: news.articles[8].title,
+                author8: news.articles[8].author,
+                publishedAt8: news.articles[8].publishedAt,
+                url8: news.articles[8].url,
+                urlToImage8: news.articles[8].urlToImage,
+                description8: news.articles[8].description,
+
                 layout: false
             })
         })

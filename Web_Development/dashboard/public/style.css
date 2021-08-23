@@ -11,7 +11,8 @@
 /* colour-palette: navy, indigo, blueviolet, coral, mediumvioletred */
 
 body{
-    background: linear-gradient(145deg, navy, indigo, blueviolet, coral, mediumvioletred);
+    background: linear-gradient(to bottom, navy, indigo);
+    overflow-x: hidden;
 }
 
 /* Header */
@@ -51,6 +52,7 @@ header h3{
 
 /* Nav */
 nav{
+    z-index: 1;
     position: sticky;
     top: 0;
 }
@@ -88,22 +90,27 @@ nav li a:hover{
         margin: 10px 0;
     }
     main{
-        display: block;
+        display: block; /* Make this work */
     }
 }
 /* /Nav */
 
 /* Article */
 main{
+    margin: 40px;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
+    column-gap: 40px;
+    row-gap: 40px;
 }
 main article{
     box-sizing: border-box;
     position: relative;
+    padding: 20px 20px 40px 20px;
     width: 100%;
-    background: linear-gradient(145deg, blueviolet,coral, mediumvioletred);
+    background: linear-gradient(to bottom, blueviolet,coral);
     text-align: center;
+    border-radius: 20px;
 }
 .title{
     width: 100%;
@@ -123,7 +130,15 @@ article img{
 .learn_more{
     cursor: pointer;
     position: absolute;
-    right: 10px;
-    bottom: 10px;
+    padding: 0 5px;
+    right: 5px;
+    bottom: 5px;
+    font-family: 'Cormorant Garamond', 'serif';
+    font-size: 25px;
+    font-weight: bold;
+    color: mediumvioletred;
+    background: linear-gradient(145deg, navy, indigo, blueviolet, coral, mediumvioletred);
+    border: 2px solid indigo;
+    border-radius: 20px;
 }
 /* /Article */
