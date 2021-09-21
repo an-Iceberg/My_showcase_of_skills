@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <math.h>
 
 void findCorrectSuffix(std::string& suffix, int index) {
 	if (((index / 10) % 10) == 1) { suffix = "th"; return; } // For numbers ending in 11, 12, 13
