@@ -6,8 +6,10 @@ int distance(int a, int b)
 {
     if (a > b)
         return a - b;
+
     else if (b > a)
         return b - a;
+
     else
         return 0;
 }
@@ -16,8 +18,10 @@ int smallerPillar(int pillarA, int pillarB)
 {
     if (pillarA < pillarB)
         return pillarA;
+
     else if (pillarB < pillarA)
         return pillarB;
+        
     else
         return pillarA;
 }
