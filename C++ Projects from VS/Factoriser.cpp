@@ -1,5 +1,6 @@
 ﻿#include <iostream>
 #include <vector>
+#include <math.h>
 
 //// Factorising part ////
 bool isPrime(int number) {
