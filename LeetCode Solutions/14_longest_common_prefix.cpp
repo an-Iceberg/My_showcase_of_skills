@@ -2,7 +2,7 @@
 #include <string>
 #include <vector>
 
-std::string longestCommonPrefix(std::vector<std::string> strings)
+std::string longestCommonPrefix(std::vector<std::string>& strings)
 {
     if (strings.size() == 0)
         return "";
