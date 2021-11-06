@@ -1,5 +1,3 @@
-*/*.exe
-*/node_modules
-*/*/node_modules
-*/*/*/node_modules
-*/*/*/*/node_modules
+*.exe
+node_modules
+olcPixelGameEngine.h
