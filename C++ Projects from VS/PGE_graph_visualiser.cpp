@@ -353,8 +353,9 @@ public:
 		bool leadsToEnd = true;
 
 		// Loads the relevant parts of the graph into a list
+		// TODO: this goddamn algorithm
 		while (!stack.empty())
-		{ // TODO: this goddamn algorithm
+		{
 			// === Debug ===
 			std::cout << "size:" + stack.size() << ' ' << "top:" + stack.top() << ' ';
 			for (auto const &n : exclusionNodes)
