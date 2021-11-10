@@ -5,6 +5,9 @@
 #include <vector>
 #include <limits>
 
+// ! TODO: !! comment everything !!
+// ! It is seriously important to comment everything and everyone who says otherwise is just ignorant of the inconvenience that the lack of good commeting causes
+
 struct sVertex
 {
 	float px;
