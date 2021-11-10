@@ -5,8 +5,6 @@
 #include <vector>
 #include <limits>
 
-// ! TODO: !! comment everything !!
-// ! It is seriously important to comment everything and everyone who says otherwise is just ignorant of the inconvenience that the lack of good commeting causes
 
 struct sVertex
 {
@@ -71,7 +69,7 @@ private:
 	int iRadius = 15;
 	int iSelectedVertex = -1;
 	int iEdgeLength = 1;
-	int iMode = 1;
+	int iMode = 1; // ! <== this needs to be an enum
 	int iStart = -1;
 	int iEnd = -1;
 	bool bChangeHasOccured = false;
@@ -157,6 +155,7 @@ public:
 			vPath.clear();
 	}
 
+	// Detects ovelap between two vertices and applies froce pushing them away from each other
 	void Collision()
 	{
 		for (auto &vertex : vVertices)
@@ -260,10 +259,12 @@ public:
 			else
 				FillCircle(vertex.px, vertex.py, iRadius, olc::Pixel(255, 128, 0));
 
+			// The selected circle is highlighted magenta
 			if (vertex.id == iSelectedVertex)
 			{
-				FillCircle(vertex.px, vertex.py, iRadius, olc::MAGENTA); // Selected circle is highlighted red
+				FillCircle(vertex.px, vertex.py, iRadius, olc::MAGENTA);
 			}
+
 			if (vertex.id > 9)
 			{
 				DrawString(vertex.px - 15.0f, vertex.py - 7.0f, std::to_string(vertex.id), olc::BLACK, 2);
@@ -280,6 +281,7 @@ public:
 			{
 				if (vertex.id == iStart)
 					DrawString(vertex.px - 40, vertex.py - 32.0f, "Start", olc::CYAN, 2);
+
 				if (vertex.id == iEnd)
 					DrawString(vertex.px - 24, vertex.py - 32.0f, "End", olc::CYAN, 2);
 			}
@@ -289,48 +291,60 @@ public:
 		DrawString(5.0f, 25.0f, mode, olc::MAGENTA, 2);
 	}
 
+	// Returns whether an edge is part of the selected path
 	bool EdgeIsInPath(int sid, int tid)
 	{
 		if (vPath.empty())
 			return false;
+
 		for (int i = 0; i < vPath.size() - 1; i++)
 			if (sid == vPath[i] && tid == vPath[i + 1])
 				return true;
+
 		return false;
 	}
 
+	// Returns whether a vertex is part of the selected path
 	bool VertexIsInPath(int id)
 	{
 		for (auto const &point : vPath)
 			if (point == id)
 				return true;
+
 		return false;
 	}
 
+	// The user left-clicks on a vertex, setting it as the starting point of dijkstra's shortest path
 	void SetStart()
 	{
 		for (auto const &vertex : vVertices)
 			if (IsPointInCircle(vertex.px, vertex.py, iRadius, GetMouseX(), GetMouseY()))
 				iStart = vertex.id;
+
 		bChangeHasOccured = true;
 	}
 
+	// The user right-clicks on a vertex, setting it as the ending point of dijkstra's shortest path
 	void SetEnd()
 	{
 		for (auto const &vertex : vVertices)
 			if (IsPointInCircle(vertex.px, vertex.py, iRadius, GetMouseX(), GetMouseY()))
 				iEnd = vertex.id;
+
 		bChangeHasOccured = true;
 	}
 
+	// Returns whether the list contains the point
 	bool containsPoint(int _node, std::list<sPoint> nodes)
 	{
 		for (auto const &node : nodes)
 			if (node.id == _node)
 				return true;
+		
 		return false;
 	}
 
+	// Returns whether the vector contains the node
 	bool containsNode(int _node, std::vector<int> nodes)
 	{
 		for (auto const &node : nodes)
@@ -338,6 +352,7 @@ public:
 			if (_node == node)
 				return true;
 		}
+
 		return false;
 	}
 
@@ -355,8 +370,8 @@ public:
 		bool hasChildren = true;
 		bool leadsToEnd = true;
 
+		// TODO: this forsaken algorithm
 		// Loads the relevant parts of the graph into a list
-		// TODO: this goddamn algorithm
 		for (int index = 0; index < 100; index++)
 		{
 			std::cout << "size:" + stack.size() << ' ' << "top:" + stack.top() << ' '; // dbg
@@ -372,7 +387,9 @@ public:
 
 			// If one of its children is in dijkstra or is iEnd, move it to dijkstra
 			for (auto const &edge : vEdges)
+
 				if (edge.source == stack.top())
+
 					if (containsPoint(edge.target, dijkstra) || edge.target == iEnd)
 					{
 						dijkstra.push_back(sPoint(stack.top(), iEnd, INT_MAX));
@@ -382,14 +399,14 @@ public:
 
 			// If the node is in neither lists, push its children onto the stack
 			if (!containsNode(stack.top(), exclusionNodes) && !containsPoint(stack.top(), dijkstra))
-			{
+
 				for (auto const &edge : vEdges)
+
 					if (edge.source == stack.top())
 					{
 						hasChildren = true;
 						stack.push(edge.target);
 					}
-			}
 
 			// If it has no children and it's not iEnd, pop it without consequence
 			if (!hasChildren && stack.top() != iEnd)
@@ -404,47 +421,61 @@ public:
 			std::cout << point.id << ' '; // dbg
 		std::cout << std::endl; // dbg
 
+		// Dijkstra's shortest path construction data
 		for (auto &point : dijkstra)
-		{ // Dijkstra's shortest path construction data
+		{
 			if (point.visited)
 				continue;
+
 			point.visited = true;
 
 			for (auto const &edge : vEdges)
-				if (edge.source == point.id) // for all neighbours that are a source
+
+				// for all neighbours that are a source
+				if (edge.source == point.id)
+
 					for (auto &_point : dijkstra)
-						if (edge.target == _point.id) // for all neighbours that are a source to this point
+
+						// for all neighbours that are a source to this point
+						if (edge.target == _point.id)
+
+							// Check all sources for distance, if shorter then update them accordingly
 							if (_point.distance > point.distance + edge.length)
-							{ // Check all sources for distance, if shorter then update them accordingly
+							{
 								_point.distance = point.distance + edge.length;
 								_point.parent = point.id;
 							}
 		}
 
-		std::list<sPoint>::iterator it = dijkstra.begin();
+		std::list<sPoint>::iterator listIterator = dijkstra.begin();
 
-		while (it->id != iEnd)
-			it++;
+		while (listIterator->id != iEnd)
+			listIterator++;
 
+		// Clear the stack
 		while (!stack.empty())
-		{ // Clear the stack
 			stack.pop();
-		}
+
 		int parent;
 
-		while (it->id != iStart)
+		while (listIterator->id != iStart)
 		{
-			if (it->parent == iEnd) // This prevents an infinite loop
+			// This prevents an infinite loop
+			if (listIterator->parent == iEnd)
 				break;
-			stack.push(it->id);
-			parent = it->parent;
-			it = --dijkstra.end();
-			while (it->id != parent)
-				it--;
+
+			stack.push(listIterator->id);
+
+			parent = listIterator->parent;
+
+			listIterator = --dijkstra.end();
+
+			while (listIterator->id != parent)
+				listIterator--;
 		}
 
-		it = dijkstra.begin();
-		stack.push(it->id);
+		listIterator = dijkstra.begin();
+		stack.push(listIterator->id);
 
 		while (!stack.empty())
 		{
@@ -460,7 +491,8 @@ public:
 		bChangeHasOccured = false;
 	}
 
-	// TODO: account for void return
+	// TODO: account for void return value
+	// Returns the x value of a vertex
 	float GetX(int id)
 	{
 		for (auto const &vertex : vVertices)
@@ -468,7 +500,8 @@ public:
 				return vertex.px;
 	}
 
-	// TODO: account for void return
+	// TODO: account for void return value
+	// Returns the y value of a vertex
 	float GetY(int id)
 	{
 		for (auto const &vertex : vVertices)
@@ -476,19 +509,21 @@ public:
 				return vertex.py;
 	}
 
+	// The vertex clicked on by the user is marked as selected
 	void SelectVertex()
 	{
 		pSelectedVertex = nullptr;
+
 		for (auto &vertex : vVertices)
-		{
+
 			if (IsPointInCircle(vertex.px, vertex.py, iRadius, GetMouseX(), GetMouseY()))
 			{
 				pSelectedVertex = &vertex;
 				break;
 			}
-		}
 	}
 
+	// The selected vertex follows the position of the mouse cursor
 	void MoveVertex()
 	{
 		if (pSelectedVertex != nullptr)
@@ -498,84 +533,95 @@ public:
 		}
 	}
 
+	// TODO: refactor this mess
+	// Creates a new vertex
 	void CreateNewVertex()
-	{ // TODO: refactor this mess
+	{
 		pSelectedVertex = nullptr;
 		bool bGoodMousePosition = false;
+		
 		if (vVertices.size() == 0)
 		{
 			vVertices.push_back(sVertex(GetMouseX(), GetMouseY(), 0));
 			sIndices.insert(0);
 			return;
 		}
+
+		// Checks if the mouse is inside a vertex
 		for (auto &vertex : vVertices)
-		{ // Checks if the mouse is inside a vertex
+		{
 			if (!IsPointInCircle(vertex.px, vertex.py, iRadius, GetMouseX(), GetMouseY()))
-			{
+
 				bGoodMousePosition = true;
-			}
+
 			else
 			{
 				bGoodMousePosition = false;
 				break;
 			}
 		}
+
 		int id = 0;
+
+		// Creates appropriate id
 		while (sIndices.count(id) > 0)
-		{ // Creates appropriate id
 			id++;
-		}
+
 		if (bGoodMousePosition)
 		{
 			vVertices.push_back(sVertex(GetMouseX(), GetMouseY(), id));
 			sIndices.insert(id);
 		}
+
 		bGoodMousePosition = false;
 		bChangeHasOccured = true;
 	}
 
+	// Deletes a vertex
 	void DeleteVertex()
 	{
 		pSelectedVertex = nullptr;
 		int _id = -1;
+
 		for (int i = 0; i < vVertices.size(); i++)
-		{
+			
 			if (IsPointInCircle(vVertices[i].px, vVertices[i].py, iRadius, GetMouseX(), GetMouseY()))
 			{
 				_id = vVertices[i].id;
 				vVertices.erase(vVertices.begin() + i);
 				sIndices.erase(_id);
 			}
-		}
+
 		for (int i = 0; i < vEdges.size(); i++)
-		{
+
 			if (vEdges[i].source == _id || vEdges[i].target == _id)
 			{
 				vEdges.erase(vEdges.begin() + i);
 				i--;
 			}
-		}
+		
 		bChangeHasOccured = true;
 	}
 
+	// TODO: refactor this mess
+	// Creates a new edge
 	void CreateNewEdge()
-	{ // TODO: refactor this mess
+	{
+		// If no vertex has been selected yet
 		if (iSelectedVertex == -1)
-		{ // If no vertex has been selected yet
+
 			for (auto &vertex : vVertices)
-			{
+
 				if (IsPointInCircle(vertex.px, vertex.py, iRadius, GetMouseX(), GetMouseY()))
-				{
+
 					iSelectedVertex = vertex.id;
-				}
-			}
-		}
 		else
 		{
 			for (auto &vertex : vVertices)
 			{
+				// Don't create an edge from the vertex to itself
 				if (vertex.id != iSelectedVertex)
-				{ // Don't create an edge from the vertex to itself
+				{
 					if (IsPointInCircle(vertex.px, vertex.py, iRadius, GetMouseX(), GetMouseY()))
 					{
 						for (auto const &edge : vEdges)
@@ -591,42 +637,45 @@ public:
 								return;
 							}
 						}
+						
 						vEdges.push_back(sEdge(iSelectedVertex, vertex.id, iEdgeLength));
 					}
 				}
 			}
+
 			iSelectedVertex = -1;
 		}
+
 		bChangeHasOccured = true;
 	}
 
+	// Deletes an edge
 	void DeleteEdge()
 	{
 		for (auto const &vertex : vVertices)
-		{
+
 			if (IsPointInCircle(vertex.px, vertex.py, iRadius, GetMouseX(), GetMouseY()))
-			{
+				
 				for (int i = 0; i < vEdges.size(); i++)
-				{
+					
 					if (vEdges[i].source == iSelectedVertex && vEdges[i].target == vertex.id)
-					{
+
 						vEdges.erase(vEdges.begin() + i);
-					}
-				}
-			}
-		}
+		
 		iSelectedVertex = -1;
 		bChangeHasOccured = true;
 	}
 
+	// Returns whether two given circles overlap
 	bool DoCirclesOverlap(float x1, float y1, float r1, float x2, float y2, float r2)
 	{
 		return fabs((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2)) <= (r1 + r2) * (r1 + r2);
 	}
 
-	bool IsPointInCircle(float x1, float y1, float r1, float px, float py)
+	// Returns whether a given point is within a circle
+	bool IsPointInCircle(float circleX, float circleY, float radius, float pointX, float pointY)
 	{
-		return fabs((x1 - px) * (x1 - px) + (y1 - py) * (y1 - py)) < (r1 * r1);
+		return fabs((circleX - pointX) * (circleX - pointX) + (circleY - pointY) * (circleY - pointY)) < (radius * radius);
 	}
 };
 
