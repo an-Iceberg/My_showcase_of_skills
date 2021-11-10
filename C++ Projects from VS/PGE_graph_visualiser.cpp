@@ -354,14 +354,12 @@ public:
 
 		// Loads the relevant parts of the graph into a list
 		// TODO: this goddamn algorithm
-		while (!stack.empty())
+		for (int index = 0; index < 100; index++)
 		{
-			// === Debug ===
-			std::cout << "size:" + stack.size() << ' ' << "top:" + stack.top() << ' ';
-			for (auto const &n : exclusionNodes)
-				std::cout << n << ',';
-			std::cout << std::endl;
-			// === /Debug ===
+			std::cout << "size:" + stack.size() << ' ' << "top:" + stack.top() << ' '; // dbg
+			for (auto const &n : exclusionNodes) // dbg
+				std::cout << n << ','; // dbg
+			std::cout << std::endl; // dbg
 
 			hasChildren = false;
 
@@ -398,12 +396,10 @@ public:
 			}
 		}
 
-		// === Debug ===
-		std::cout << "Graph:";
-		for (auto const &point : dijkstra)
-			std::cout << point.id << ' ';
-		std::cout << std::endl;
-		// === /Debug ===
+		std::cout << "Graph:"; // dbg
+		for (auto const &point : dijkstra) // dbg
+			std::cout << point.id << ' '; // dbg
+		std::cout << std::endl; // dbg
 
 		for (auto &point : dijkstra)
 		{ // Dijkstra's shortest path construction data
@@ -453,16 +449,15 @@ public:
 			stack.pop();
 		}
 
-		// === Debug ===
-		std::cout << "Path:";
-		for (auto const &point : vPath)
-			std::cout << point << ' ';
-		std::cout << std::endl;
-		// === /Debug ===
+		std::cout << "Path:"; // dbg
+		for (auto const &point : vPath) // dbg
+			std::cout << point << ' '; // dbg
+		std::cout << std::endl; // dbg
 
 		bChangeHasOccured = false;
 	}
 
+	// TODO: account for void return
 	float GetX(int id)
 	{
 		for (auto const &vertex : vVertices)
@@ -470,6 +465,7 @@ public:
 				return vertex.px;
 	}
 
+	// TODO: account for void return
 	float GetY(int id)
 	{
 		for (auto const &vertex : vVertices)
