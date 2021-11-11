@@ -384,7 +384,7 @@ public:
 		return false;
 	}
 
-	// TODO: redesign this
+	// TODO: redesign this mess
 	// This provides the data for the shortest path from the start point to the end point
 	void Dijkstra()
 	{
