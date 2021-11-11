@@ -5,6 +5,13 @@
 #include <vector>
 #include <limits>
 
+enum Mode
+{
+	MOVE,
+	VERTEX,
+	EDGE,
+	DIJKSTRA
+};
 
 struct sVertex
 {
@@ -69,7 +76,7 @@ private:
 	int iRadius = 15;
 	int iSelectedVertex = -1;
 	int iEdgeLength = 1;
-	int iMode = 1; // ! <== this needs to be an enum
+	Mode eMode = MOVE;
 	int iStart = -1;
 	int iEnd = -1;
 	bool bChangeHasOccured = false;
@@ -88,63 +95,85 @@ public:
 		return true;
 	}
 
+	// Handles user input
 	void UserInput()
 	{
 		bChangeHasOccured = false;
-		if (iMode < 4 && GetKey(olc::RIGHT).bPressed)
-			iMode++;
 
-		if (iMode > 1 && GetKey(olc::LEFT).bPressed)
-			iMode--;
+		// Changing modes via arrow keys
+		if (eMode == MOVE && GetKey(olc::RIGHT).bPressed)
+			eMode = VERTEX;
+		else if (eMode == VERTEX && GetKey(olc::RIGHT).bPressed)
+			eMode = EDGE;
+		else if (eMode == EDGE && GetKey(olc::RIGHT).bPressed)
+			eMode = DIJKSTRA;
+		else if (eMode == DIJKSTRA && GetKey(olc::LEFT).bPressed)
+			eMode = EDGE;
+		else if (eMode == EDGE && GetKey(olc::LEFT).bPressed)
+			eMode = VERTEX;
+		else if (eMode == VERTEX && GetKey(olc::LEFT).bPressed)
+			eMode = MOVE;
 
-		switch (iMode)
+		switch (eMode)
 		{
-		case 1: // Move vertices
+		case MOVE: // Move vertices
 			if (GetMouse(0).bPressed)
 				SelectVertex();
+
 			if (GetMouse(0).bHeld)
 				MoveVertex();
+
 			if (GetMouse(0).bReleased)
 				pSelectedVertex = nullptr;
+
 			break;
 
-		case 2:													// Vertex creation/deletion
+		case VERTEX:											// Vertex creation/deletion
 			if (vVertices.size() < 100 && GetMouse(0).bPressed) // Max number of vertices: 99
 				CreateNewVertex();
+
 			if (GetMouse(1).bPressed)
 				DeleteVertex();
+
 			break;
 
-		case 3: // Edge creation/deletion
+		case EDGE: // Edge creation/deletion
 			if (GetMouse(0).bPressed)
 				CreateNewEdge();
+
 			if (GetMouse(1).bPressed)
 				DeleteEdge();
+
 			break;
 
-		case 4: // Dijkstra's shortest path
+		case DIJKSTRA: // Dijkstra's shortest path
 			if (GetMouse(0).bPressed)
 				SetStart();
+
 			if (GetMouse(1).bPressed)
 				SetEnd();
+
 			if (GetKey(olc::ENTER).bReleased)
 				Dijkstra();
+
 			break;
 		}
 
-		// === User definable edge length ===
+		// User definable edge length
 		if (iEdgeLength > 1 && GetKey(olc::A).bPressed)
 			iEdgeLength--;
+
 		if (iEdgeLength < 20 && GetKey(olc::D).bPressed)
 			iEdgeLength++;
 
-		// === Changeable radius ===
+		// Changeable radius
 		if (iRadius < 20 && GetKey(olc::UP).bPressed)
 			iRadius++;
+
 		if (iRadius > 12 && GetKey(olc::DOWN).bPressed)
 			iRadius--;
 
-		// === Clear graph ===
+		// Clear graph
 		if (!vVertices.empty() && GetKey(olc::BACK).bPressed)
 		{
 			vVertices.clear();
@@ -180,26 +209,29 @@ public:
 		}
 	}
 
+	// Draws the graph to the screen
 	void DrawingRoutine()
 	{
 		Clear(olc::DARK_BLUE);
 
 		std::string mode;
-		switch (iMode)
+
+		switch (eMode)
 		{
-		case 1:
+		case MOVE:
 			mode = "Mode: move ->";
 			break;
-		case 2:
+		case VERTEX:
 			mode = "Mode: <- vertex ->";
 			break;
-		case 3:
+		case EDGE:
 			mode = "Mode: <- edge ->";
 			break;
-		case 4:
+		case DIJKSTRA:
 			mode = "Mode: <- Dijkstra's shortest path";
 			break;
 		}
+
 		std::string length = "Edge length: ";
 
 		// Drawing the edges with length and direction
@@ -231,7 +263,7 @@ public:
 			float x4 = xh + (directionHY / length) * 10.0f;
 			float y4 = yh - (directionHX / length) * 10.0f;
 
-			if (iMode == 4)
+			if (eMode == DIJKSTRA)
 			{
 				if (EdgeIsInPath(edge.source, edge.target))
 					DrawLine(sx, sy, tx, ty, olc::GREEN);
@@ -249,8 +281,9 @@ public:
 		// Drawing the vertices with their respevtive indices
 		for (auto const &vertex : vVertices)
 		{
-			if (iMode == 4)
-			{ // Drawing the path
+			// Drawing the path
+			if (eMode == DIJKSTRA)
+			{
 				if (VertexIsInPath(vertex.id))
 					FillCircle(vertex.px, vertex.py, iRadius, olc::GREEN);
 				else
@@ -261,21 +294,15 @@ public:
 
 			// The selected circle is highlighted magenta
 			if (vertex.id == iSelectedVertex)
-			{
 				FillCircle(vertex.px, vertex.py, iRadius, olc::MAGENTA);
-			}
 
 			if (vertex.id > 9)
-			{
 				DrawString(vertex.px - 15.0f, vertex.py - 7.0f, std::to_string(vertex.id), olc::BLACK, 2);
-			}
 			else
-			{
 				DrawString(vertex.px - 7.0f, vertex.py - 7.0f, std::to_string(vertex.id), olc::BLACK, 2);
-			}
 		}
 
-		if (iMode == 4)
+		if (eMode == DIJKSTRA)
 		{
 			for (auto const &vertex : vVertices)
 			{
@@ -286,6 +313,7 @@ public:
 					DrawString(vertex.px - 24, vertex.py - 32.0f, "End", olc::CYAN, 2);
 			}
 		}
+
 		// TODO: Draw radius size
 		DrawString(5.0f, 5.0f, length.append(std::to_string(iEdgeLength)), olc::MAGENTA, 2);
 		DrawString(5.0f, 25.0f, mode, olc::MAGENTA, 2);
@@ -340,7 +368,7 @@ public:
 		for (auto const &node : nodes)
 			if (node.id == _node)
 				return true;
-		
+
 		return false;
 	}
 
@@ -356,6 +384,8 @@ public:
 		return false;
 	}
 
+	// TODO: redesign this
+	// This provides the data for the shortest path from the start point to the end point
 	void Dijkstra()
 	{
 		if (iStart == -1 || iEnd == -1)
@@ -375,9 +405,9 @@ public:
 		for (int index = 0; index < 100; index++)
 		{
 			std::cout << "size:" + stack.size() << ' ' << "top:" + stack.top() << ' '; // dbg
-			for (auto const &n : exclusionNodes) // dbg
-				std::cout << n << ','; // dbg
-			std::cout << std::endl; // dbg
+			for (auto const &n : exclusionNodes)									   // dbg
+				std::cout << n << ',';												   // dbg
+			std::cout << std::endl;													   // dbg
 
 			hasChildren = false;
 
@@ -416,10 +446,10 @@ public:
 			}
 		}
 
-		std::cout << "Graph:"; // dbg
+		std::cout << "Graph:";			   // dbg
 		for (auto const &point : dijkstra) // dbg
-			std::cout << point.id << ' '; // dbg
-		std::cout << std::endl; // dbg
+			std::cout << point.id << ' ';  // dbg
+		std::cout << std::endl;			   // dbg
 
 		// Dijkstra's shortest path construction data
 		for (auto &point : dijkstra)
@@ -483,10 +513,10 @@ public:
 			stack.pop();
 		}
 
-		std::cout << "Path:"; // dbg
+		std::cout << "Path:";			// dbg
 		for (auto const &point : vPath) // dbg
-			std::cout << point << ' '; // dbg
-		std::cout << std::endl; // dbg
+			std::cout << point << ' ';	// dbg
+		std::cout << std::endl;			// dbg
 
 		bChangeHasOccured = false;
 	}
@@ -539,7 +569,7 @@ public:
 	{
 		pSelectedVertex = nullptr;
 		bool bGoodMousePosition = false;
-		
+
 		if (vVertices.size() == 0)
 		{
 			vVertices.push_back(sVertex(GetMouseX(), GetMouseY(), 0));
@@ -584,7 +614,7 @@ public:
 		int _id = -1;
 
 		for (int i = 0; i < vVertices.size(); i++)
-			
+
 			if (IsPointInCircle(vVertices[i].px, vVertices[i].py, iRadius, GetMouseX(), GetMouseY()))
 			{
 				_id = vVertices[i].id;
@@ -599,7 +629,7 @@ public:
 				vEdges.erase(vEdges.begin() + i);
 				i--;
 			}
-		
+
 		bChangeHasOccured = true;
 	}
 
@@ -609,39 +639,40 @@ public:
 	{
 		// If no vertex has been selected yet
 		if (iSelectedVertex == -1)
+		{
 
 			for (auto &vertex : vVertices)
 
 				if (IsPointInCircle(vertex.px, vertex.py, iRadius, GetMouseX(), GetMouseY()))
-
 					iSelectedVertex = vertex.id;
+		}
 		else
 		{
 			for (auto &vertex : vVertices)
-			{
+
 				// Don't create an edge from the vertex to itself
 				if (vertex.id != iSelectedVertex)
-				{
+
 					if (IsPointInCircle(vertex.px, vertex.py, iRadius, GetMouseX(), GetMouseY()))
 					{
 						for (auto const &edge : vEdges)
 						{
+							// Don't create a duplicate edge
 							if (edge.source == iSelectedVertex && edge.target == vertex.id)
-							{ // Don't create a duplicate edge
+							{
 								iSelectedVertex = -1;
 								return;
 							}
+							// Don't create a bidirectional edge
 							if (edge.target == iSelectedVertex && edge.source == vertex.id)
-							{ // Don't create a bidirectional edge
+							{
 								iSelectedVertex = -1;
 								return;
 							}
 						}
-						
+
 						vEdges.push_back(sEdge(iSelectedVertex, vertex.id, iEdgeLength));
 					}
-				}
-			}
 
 			iSelectedVertex = -1;
 		}
@@ -655,13 +686,13 @@ public:
 		for (auto const &vertex : vVertices)
 
 			if (IsPointInCircle(vertex.px, vertex.py, iRadius, GetMouseX(), GetMouseY()))
-				
+
 				for (int i = 0; i < vEdges.size(); i++)
-					
+
 					if (vEdges[i].source == iSelectedVertex && vEdges[i].target == vertex.id)
 
 						vEdges.erase(vEdges.begin() + i);
-		
+
 		iSelectedVertex = -1;
 		bChangeHasOccured = true;
 	}
