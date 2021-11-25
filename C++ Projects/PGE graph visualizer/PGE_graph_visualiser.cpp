@@ -15,8 +15,8 @@ enum Mode
 
 struct sVertex
 {
-	float px;
-	float py;
+	float px; // Position on screen
+	float py; // Position on screen
 	int id;
 
 	sVertex(float x, float y, int _id)
@@ -29,8 +29,8 @@ struct sVertex
 
 struct sEdge
 {
-	int source;
-	int target;
+	int source; // Id of the source vertex
+	int target; // Id of the target vertex
 	int length;
 
 	sEdge(int _source, int _target, int _length)
@@ -41,6 +41,7 @@ struct sEdge
 	}
 };
 
+// This might no longer be necessary
 struct sPoint
 {
 	int id;
@@ -66,10 +67,10 @@ public:
 	}
 
 private:
-	std::vector<sVertex> vVertices;
-	std::vector<sEdge> vEdges; // OPTIONAL: implement vEdges as a set
+	std::vector<sVertex> vVertices; // This contains the data for the vertices
+	std::vector<sEdge> vEdges; // This contains the data for the edges
 	std::set<int> sIndices;
-	std::vector<int> vPath;
+	std::vector<int> vPath; // This contains the ids of the vertices that forms dijkstra's shortest path
 
 	sVertex *pSelectedVertex = nullptr;
 
