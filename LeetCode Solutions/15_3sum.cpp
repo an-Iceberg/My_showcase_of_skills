@@ -1,60 +1,92 @@
 #include <iostream>
 #include <vector>
 
-// Helper function
-bool contains(std::vector<int> &numbers, int number)
+// Returns true, if the combination of pointers is already present in the solution set
+bool isAlreadyInSet(const int *&num1, const int *&num2, const int *&num3, const std::vector<std::vector<int>> &solutionSet)
 {
-    for (int index = 0; index < numbers.size(); index++)
+    int foulCounter = 0;
+
+    // Iterates over all solution sets
+    for (std::vector<int> solution : solutionSet)
     {
-        if (numbers[index] == number)
-            return true;
+        // Resets the foul counter for each solution set
+        foulCounter = 0;
+
+        // Iterates over all numbers in a solution set
+        for (int number : solution)
+        {
+            // If a number in the set equals a pointer value, increment the foul counter
+            if (number == *num1 || number == *num2 || number == *num3)
+            {
+                foulCounter++;
+            }
+
+            // If two numbers equal their pointers, the third one also equals its pointer, thus the solution is already present
+            if (foulCounter >= 2)
+            {
+                return true;
+            }
+        }
     }
 
     return false;
 }
-// /Helper function
 
-// This is not an efficient solution by any means. But it does deliver a correct solution
-std::vector<std::vector<int>> threeSum(std::vector<int> &numbers)
+// Finds all solutions and returns only one permutation of each solution
+std::vector<std::vector<int>> threeSum(const std::vector<int> &numbers)
 {
-    std::vector<std::vector<int>> solutionSet = {}; // This stores the values
-    std::vector<int> exclusionSet = {};             // This stores the indices of the values
+    std::vector<std::vector<int>> solutionSet = {};
 
-    // Iterates over 'numbers' on 3 levels, checking each number
-    // If the indices are the same, the iteration is ignored
-    // Solutions are progressively added to the exclusion set; this is to avoid duplicate solutions (because the order of the solution doesn't matter and we only want it once)
-    // If an index is in the exclusion set, the iteration is ignored
-    for (int firstIndex = 0; firstIndex < numbers.size(); firstIndex++)
+    const int *num1;
+    const int *num2;
+    const int *num3;
+
+    num1 = &numbers[0];
+    num2 = &numbers[0];
+    num3 = &numbers[0];
+
+    // Limiting the number of iterations to size^3 of numbers (that's at max how many iterations it takes to find all solutions)
+    for (int i = 0; i < (numbers.size() * numbers.size() * numbers.size()); i++)
     {
-        if (contains(exclusionSet, firstIndex))
-            continue;
-
-        for (int secondIndex = 0; secondIndex < numbers.size(); secondIndex++)
+        // If all pointers point to different numbers and their sum is 0 and the combination is not already present in the solution set
+        // then add the combination to the solution set
+        if (num1 != num2 && num1 != num3 && num2 != num3 && *num1 + *num2 + *num3 == 0 && !isAlreadyInSet(num1, num2, num3, solutionSet))
         {
-            if (contains(exclusionSet, secondIndex) || secondIndex == firstIndex)
-                continue;
-
-            for (int thirdIndex = 0; thirdIndex < numbers.size(); thirdIndex++)
-            {
-                if (contains(exclusionSet, thirdIndex) || thirdIndex == secondIndex || thirdIndex == firstIndex)
-                    continue;
-
-                if (numbers[firstIndex] + numbers[secondIndex] + numbers[thirdIndex] == 0)
-                {
-                    solutionSet.push_back({numbers[firstIndex], numbers[secondIndex], numbers[thirdIndex]});
-                    exclusionSet.push_back(firstIndex);
-                    exclusionSet.push_back(secondIndex);
-                    exclusionSet.push_back(thirdIndex);
-                }
-            }
+            solutionSet.push_back({*num1, *num2, *num3});
         }
+
+        // If all three pointers are about to reach the end of the vector, all cases have been evaluated
+        if (num1 == &numbers[numbers.size() - 3] && num2 == &numbers[numbers.size() - 2] && num3 >= &numbers[numbers.size() - 1])
+        {
+            break;
+        }
+
+        // If the second pointer has reached the end and the first is about to reach the second, reset their positions and increment the third pointer
+        if (num1 == &numbers[numbers.size() - 2] && num2 >= &numbers[numbers.size() - 1])
+        {
+            num3++;
+            num2 = &numbers[0];
+            num1 = &numbers[0];
+            continue;
+        }
+
+        // If the first pointer has reached the end of the vector, reset it to the beginning of the vector and increment the second pointer
+        if (num1 >= &numbers[numbers.size() - 1])
+        {
+            num1 = &numbers[0];
+            num2++;
+            continue;
+        }
+
+        num1++;
     }
 
     return solutionSet;
 }
 
 void printNumbers(std::vector<std::vector<int>> &numbers)
-{ // Iterates over all vectors
+{
+    // Iterates over all vectors
     for (int vector = 0; vector < numbers.size(); vector++)
     {
         std::cout << "[";
@@ -98,13 +130,13 @@ void test(int testID, std::vector<int> input, std::vector<std::vector<int>> expe
 int main()
 {
     // Tests from leetcode.com
-    test(0, {-1, 0, 1, 2, -1, -4}, {{-1, 0, 1}, {-1, 2, -1}}); // The order of the numbers is not the same as on leetcode but the solution is still correct
+    test(0, {-1, 0, 1, 2, -1, -4}, {{1, 0, -1}, {-1, 2, -1}}); // The order of the numbers is not the same as on leetcode but the solution is still correct
     test(1, {}, {});
     test(2, {0}, {});
 
     // My own tests
-    test(3, {1, 12, 2, 23, 3, -5, -11}, {{2, 3, -5}});
-    test(4, {4, 7, -9, -5, 4, -2}, {{7, -5, -2}});
-    test(5, {-13, -8, 4, -18, -8, 14, -16, -20, -11, 3, 20, 0}, {{4, -18, 14}, {-20, 20, 0}});
+    test(3, {1, 12, 2, 23, 3, -5, -11}, {{-5, 3, 2}});
+    test(4, {4, 7, -9, -5, 4, -2}, {{-2, -5, 7}});
+    test(5, {-13, -8, 4, -18, -8, 14, -16, -20, -11, 3, 20, 0}, {{14, -18, 4}, {0, 20, -20}});
     return 0;
 }

@@ -3,7 +3,7 @@
 #include <vector>
 
 // Returns the positive differernce between target and sum
-int distance(int target, int sum)
+int distance(const int &target, const int &sum)
 {
     if (target > sum)
     {
@@ -19,14 +19,14 @@ int distance(int target, int sum)
     }
 }
 
-int threeSumClosest(std::vector<int> &numbers, int &target)
+int threeSumClosest(const std::vector<int> &numbers, const int &target)
 {
     int sum;
     int diff = 999;
     int result;
-    int *num1;
-    int *num2;
-    int *num3;
+    const int *num1;
+    const int *num2;
+    const int *num3;
 
     num1 = &numbers[0];
     num2 = &numbers[0];
