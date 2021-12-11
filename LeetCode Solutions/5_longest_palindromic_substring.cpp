@@ -4,9 +4,13 @@
 std::string longestPalindrome(std::string str)
 {
     if (str.size() == 0)
+    {
         return "";
+    }
     else if (str.size() == 1)
+    {
         return str;
+    }
 
     std::string palindrome = "-";
     int length = 0;
@@ -15,9 +19,11 @@ std::string longestPalindrome(std::string str)
     {
         int size = 1;
 
-        if (str.at(index - size) == str.at(index)) // Checks for type 1 palindrome: 'abccba'
+        // Checks for type 1 palindrome: 'abccba'
+        if (str.at(index - size) == str.at(index))
         {
-            while (index - size > -1 && index + size - 1 < str.size() && str.at(index - size) == str.at(index + size - 1)) // As long as the characters match and the size is smaller than half the string
+            // As long as the characters match and the size is smaller than half the string
+            while (index - size > -1 && index + size - 1 < str.size() && str.at(index - size) == str.at(index + size - 1))
             {
                 size++;
             }
@@ -28,9 +34,12 @@ std::string longestPalindrome(std::string str)
                 palindrome = str.substr(index - size + 1, size * 2 - 2);
             }
         }
-        else if (str.at(index - size) == str.at(index + size)) // Checks for type 2 palindrome: 'abcba'
+
+        // Checks for type 2 palindrome: 'abcba'
+        else if (str.at(index - size) == str.at(index + size))
         {
-            while (index - size > -1 && index + size < str.size() && str.at(index - size) == str.at(index + size)) // As long as the characters match and the size is smaller than half the string
+            // As long as the characters match and the size is smaller than half the string
+            while (index - size > -1 && index + size < str.size() && str.at(index - size) == str.at(index + size))
             {
                 size++;
             }
@@ -54,10 +63,15 @@ std::string longestPalindrome(std::string str)
 void test(int testIndex, std::string str, std::string palindrome)
 {
     std::string result = longestPalindrome(str);
+
     if (palindrome != result)
+    {
         std::cout << testIndex << " failed, returned:" << result << " expected:" << palindrome << std::endl;
+    }
     else
+    {
         std::cout << testIndex << " passed" << std::endl;
+    }
 }
 
 int main()

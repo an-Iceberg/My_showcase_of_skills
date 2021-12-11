@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 
-int myAtoi(std::string input)
+int myAtoi(std::string &input)
 {
     bool positive = true;
     bool sign = true;
@@ -10,7 +10,9 @@ int myAtoi(std::string input)
     for (int index = 0; index < input.size(); index++)
     {
         if (sign && input[index] == ' ')
+        {
             continue;
+        }
 
         if (sign && input[index] == '+')
         {
@@ -55,10 +57,14 @@ int myAtoi(std::string input)
     }
 
     if (number > 2147483648)
+    {
         number = 2147483648;
+    }
 
     if (!positive)
+    {
         number = -number;
+    }
 
     return number;
 }
@@ -66,10 +72,15 @@ int myAtoi(std::string input)
 void test(int testID, std::string input, int expected)
 {
     int result = myAtoi(input);
+
     if (result != expected)
+    {
         std::cout << testID << " failed expected:" << expected << " got:" << result << std::endl;
+    }
     else
+    {
         std::cout << testID << " passed" << std::endl;
+    }
 }
 
 int main()

@@ -1,10 +1,12 @@
 #include <iostream>
 #include <stack>
 
-bool isPalindrome(int number)
+bool isPalindrome(int &number)
 {
     if (number < 0)
+    {
         return false;
+    }
 
     std::string sNumber = std::to_string(number);
 
@@ -12,29 +14,44 @@ bool isPalindrome(int number)
 
     int size = sNumber.size();
 
-    if (size % 2 == 0) // Type 1 palindrome: 123321
+    // Type 1 palindrome: 123321
+    if (size % 2 == 0)
     {
         size /= 2;
-        for (int index = 0; index < size; index++)
-            stack.push(sNumber[index]);
 
-        for (int index = size; index < sNumber.size(); index++){
+        for (int index = 0; index < size; index++)
+        {
+            stack.push(sNumber[index]);
+        }
+
+        for (int index = size; index < sNumber.size(); index++)
+        {
             if (stack.top() != sNumber[index])
+            {
                 return false;
+            }
             stack.pop();
         }
 
         return true;
     }
-    else // Type 2 palindrome: 12321
+
+    // Type 2 palindrome: 12321
+    else
     {
         size /= 2;
-        for (int index = 0; index < size; index++)
-            stack.push(sNumber[index]);
 
-        for (int index = size + 1; index < sNumber.size(); index++){
+        for (int index = 0; index < size; index++)
+        {
+            stack.push(sNumber[index]);
+        }
+
+        for (int index = size + 1; index < sNumber.size(); index++)
+        {
             if (stack.top() != sNumber[index])
+            {
                 return false;
+            }
             stack.pop();
         }
 
@@ -47,10 +64,15 @@ bool isPalindrome(int number)
 void test(int testID, int input, int expected)
 {
     int result = isPalindrome(input);
+
     if (result != expected)
+    {
         std::cout << testID << " failed expected:" << expected << " got:" << result << std::endl;
+    }
     else
+    {
         std::cout << testID << " passed" << std::endl;
+    }
 }
 
 int main()

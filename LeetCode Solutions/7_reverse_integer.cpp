@@ -1,6 +1,6 @@
 #include <iostream>
 
-int reverse(int number)
+int reverse(int &number)
 {
     bool negate = false;
 
@@ -21,10 +21,14 @@ int reverse(int number)
     }
 
     if (reversedNumber > 2147483648 || reversedNumber < -2147483648)
+    {
         return 0;
+    }
 
     if (negate)
+    {
         return -reversedNumber;
+    }
 
     return reversedNumber;
 }
@@ -34,9 +38,13 @@ void test(int testID, int input, int expected)
     int result = reverse(input);
 
     if (result != expected)
+    {
         std::cout << testID << " failed expected:" << expected << " got:" << result << std::endl;
+    }
     else
+    {
         std::cout << testID << " passed" << std::endl;
+    }
 }
 
 int main()

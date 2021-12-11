@@ -2,10 +2,12 @@
 #include <string>
 #include <vector>
 
-std::string longestCommonPrefix(std::vector<std::string>& strings)
+std::string longestCommonPrefix(std::vector<std::string> &strings)
 {
     if (strings.size() == 0)
+    {
         return "";
+    }
 
     std::string prefix = "";
 
@@ -13,22 +15,25 @@ std::string longestCommonPrefix(std::vector<std::string>& strings)
     prefix = strings[0];
 
     if (strings.size() == 1)
+    {
         return prefix;
+    }
 
     // Iterates over the remaining strings
     for (int str = 1; str < strings.size(); str++)
     {
         int index = 0;
-        
+
         // While the prefix matches the string, count the position
         while (prefix[index] == strings[str][index])
         {
-           index++;
+            index++;
         }
 
         // Shorten the prefix accordingly
         prefix.erase(index);
     }
+
     return prefix;
 }
 
@@ -37,10 +42,13 @@ void test(int testID, std::vector<std::string> input, std::string expected)
     std::string result = longestCommonPrefix(input);
 
     if (result != expected)
+    {
         std::cout << testID << " failed expected:" << expected << " got:" << result << std::endl;
+    }
     else
+    {
         std::cout << testID << " passed" << std::endl;
-    
+    }
 }
 
 int main()

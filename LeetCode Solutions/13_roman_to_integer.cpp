@@ -10,35 +10,43 @@ int romanToInt(std::string str)
     for (int index = 0; index < str.size(); index++)
     {
         if (index < str.size())
+        {
             memory = str[index + 1];
+        }
 
         // This could be refactored
-        if(str[index] == 'C' && memory == 'M'){
+        if (str[index] == 'C' && memory == 'M')
+        {
             number += 900;
             index++;
             continue;
         }
-        if(str[index] == 'C' && memory == 'D'){
+        if (str[index] == 'C' && memory == 'D')
+        {
             number += 400;
             index++;
             continue;
         }
-        if(str[index] == 'X' && memory == 'C'){
+        if (str[index] == 'X' && memory == 'C')
+        {
             number += 90;
             index++;
             continue;
         }
-        if(str[index] == 'X' && memory == 'L'){
+        if (str[index] == 'X' && memory == 'L')
+        {
             number += 40;
             index++;
             continue;
         }
-        if(str[index] == 'I' && memory == 'X'){
+        if (str[index] == 'I' && memory == 'X')
+        {
             number += 9;
             index++;
             continue;
         }
-        if(str[index] == 'I' && memory == 'V'){
+        if (str[index] == 'I' && memory == 'V')
+        {
             number += 4;
             index++;
             continue;
@@ -64,9 +72,13 @@ void test(int testID, std::string input, int expected)
     int result = romanToInt(input);
 
     if (result != expected)
+    {
         std::cout << testID << " failed expected:" << expected << " got:" << result << std::endl;
+    }
     else
+    {
         std::cout << testID << " passed" << std::endl;
+    }
 }
 
 int main()

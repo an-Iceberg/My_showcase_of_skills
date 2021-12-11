@@ -2,41 +2,57 @@
 #include <cassert>
 #include <iostream>
 
-int medianCalculator(std::vector<int> numbers)
+int medianCalculator(std::vector<int> &numbers)
 {
     int median = -1;
 
     if (numbers.size() < 1)
+    {
         return median;
+    }
 
-    if (numbers.size() % 2 == 0)                                                      // If the size of 'numbers' is even
-        median = (numbers[numbers.size() / 2] + numbers[numbers.size() / 2 - 1]) / 2; // Calculates the average of the two central values
+    // If the size of 'numbers' is even
+    if (numbers.size() % 2 == 0)
+    {
+        // Calculates the average of the two central values
+        median = (numbers[numbers.size() / 2] + numbers[numbers.size() / 2 - 1]) / 2;
+    }
     else
+    {
         median = numbers[numbers.size() / 2];
+    }
 
     return median;
 }
 
-int findMedianOfTwoSortedArrays(std::vector<int> numbers1, std::vector<int> numbers2)
+int findMedianOfTwoSortedArrays(std::vector<int> &numbers1, std::vector<int> &numbers2)
 {
     int median1 = medianCalculator(numbers1);
     int median2 = medianCalculator(numbers2);
 
     if (median1 == -1)
+    {
         return median2;
+    }
+
     if (median2 == -1)
+    {
         return median1;
+    }
 
     return (median1 + median2) / 2;
 }
 
-// === Tests the median calculator ===
 void test(int testIndex, std::vector<int> vector1, std::vector<int> vector2, int median)
 {
     if (median != findMedianOfTwoSortedArrays(vector1, vector2))
+    {
         std::cout << testIndex << " failed, returned:" << findMedianOfTwoSortedArrays(vector1, vector2) << " expected:" << median << std::endl;
+    }
     else
+    {
         std::cout << testIndex << " passed" << std::endl;
+    }
 }
 
 int main()

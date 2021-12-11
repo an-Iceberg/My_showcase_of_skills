@@ -2,32 +2,41 @@
 #include <iostream>
 
 // Returns the positive distance between two indices (provided they're not negative)
-int distance(int a, int b)
+int distance(int &a, int &b)
 {
     if (a > b)
+    {
         return a - b;
-
+    }
     else if (b > a)
+    {
         return b - a;
-
+    }
     else
+    {
         return 0;
+    }
 }
 
-int smallerPillar(int pillarA, int pillarB)
+int smallerPillar(int &pillarA, int &pillarB)
 {
     if (pillarA < pillarB)
+    {
         return pillarA;
-
+    }
     else if (pillarB < pillarA)
+    {
         return pillarB;
-        
+    }
     else
+    {
         return pillarA;
+    }
 }
 
+// TODO: rewrite this using pointers
 // Calculates the highest possible area from a given vector of pillar heights
-int maxArea(const std::vector<int> &heights)
+int maxArea(std::vector<int> &heights)
 {
     int area = 0;
     int calculatedArea = 0;
@@ -41,12 +50,16 @@ int maxArea(const std::vector<int> &heights)
         for (int otherPillar = 0; otherPillar < heights.size(); otherPillar++)
         {
             if (pillar == otherPillar)
+            {
                 continue;
+            }
 
             calculatedArea = smallerPillar(heights[pillar], heights[otherPillar]) * distance(pillar, otherPillar);
 
             if (calculatedArea > area)
+            {
                 area = calculatedArea;
+            }
         }
     }
 
@@ -58,9 +71,13 @@ void test(int testID, std::vector<int> heights, int expected)
     int result = maxArea(heights);
 
     if (result != expected)
+    {
         std::cout << testID << " failed expected:" << expected << " got:" << result << std::endl;
+    }
     else
+    {
         std::cout << testID << " passed" << std::endl;
+    }
 }
 
 int main()

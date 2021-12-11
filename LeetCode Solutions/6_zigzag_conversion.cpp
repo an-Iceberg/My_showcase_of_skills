@@ -2,37 +2,53 @@
 #include <string>
 #include <vector>
 
-std::string zigZagConvert(std::string input, int rows)
+std::string zigZagConvert(std::string &input, int &rows)
 {
     std::vector<std::string> subStrings;
 
+    // Initiating the right number of substrings
     for (int i = 0; i < rows; i++)
+    {
         subStrings.push_back("");
+    }
+    
     rows--;
 
     int counter = 0;
     bool increment = true;
 
+    // Appends each letter to the respective substring
     for (int index = 0; index < input.size(); index++)
     {
         subStrings[counter] += input[index];
 
         if (counter == rows)
+        {
             increment = false;
+        }
 
         if (counter == 0)
+        {
             increment = true;
+        }
 
         if (increment)
+        {
             counter++;
+        }
         else
+        {
             counter--;
+        }
     }
 
     std::string encryptedString;
 
+    // Assembling the final result
     for (int index = 0; index < subStrings.size(); index++)
+    {
         encryptedString += subStrings[index];
+    }
 
     return encryptedString;
 }
