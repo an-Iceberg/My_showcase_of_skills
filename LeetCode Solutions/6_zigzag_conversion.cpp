@@ -59,11 +59,11 @@ void test(int testID, std::string input, int rows, std::string expectedOutput)
 
     if (result != expectedOutput)
     {
-        std::cout << testID << " failed expected:" << expectedOutput << " got:" << result << std::endl;
+        std::cout << testID << " failed expected:" << expectedOutput << " got:" << result << "\n";
     }
     else
     {
-        std::cout << testID << " passed" << std::endl;
+        std::cout << testID << " passed" << "\n";
     }
 }
 

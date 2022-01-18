@@ -121,10 +121,10 @@ void test(int testID, std::vector<int> input, std::vector<std::vector<int>> expe
 
         printNumbers(result);
 
-        std::cout << "]" << std::endl;
+        std::cout << "]" << "\n";
     }
     else
-        std::cout << testID << " passed" << std::endl;
+        std::cout << testID << " passed" << "\n";
 }
 
 int main()

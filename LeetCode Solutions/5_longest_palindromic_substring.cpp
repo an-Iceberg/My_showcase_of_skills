@@ -66,11 +66,11 @@ void test(int testIndex, std::string str, std::string palindrome)
 
     if (palindrome != result)
     {
-        std::cout << testIndex << " failed, returned:" << result << " expected:" << palindrome << std::endl;
+        std::cout << testIndex << " failed, returned:" << result << " expected:" << palindrome << "\n";
     }
     else
     {
-        std::cout << testIndex << " passed" << std::endl;
+        std::cout << testIndex << " passed" << "\n";
     }
 }
 

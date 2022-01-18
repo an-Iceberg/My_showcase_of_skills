@@ -43,11 +43,11 @@ void test(int testID, std::vector<std::string> input, std::string expected)
 
     if (result != expected)
     {
-        std::cout << testID << " failed expected:" << expected << " got:" << result << std::endl;
+        std::cout << testID << " failed expected:" << expected << " got:" << result << "\n";
     }
     else
     {
-        std::cout << testID << " passed" << std::endl;
+        std::cout << testID << " passed" << "\n";
     }
 }
 

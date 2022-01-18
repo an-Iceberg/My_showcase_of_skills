@@ -1,3 +1,6 @@
+// [] is fast but .at() is safe
+
+#include <algorithm>
 #include <iostream>
 #include <vector>
 #include <string>
@@ -36,8 +39,10 @@ std::vector<char> returnLetters(const char &number)
   }
 }
 
-std::vector<std::string> letterCombinations(const std::string &digits)
+std::vector<std::string> letterCombinations(std::string &digits)
 {
+  std::sort(digits.begin(), digits.end());
+
   // Empty input
   if (digits == "")
   {
@@ -48,10 +53,8 @@ std::vector<std::string> letterCombinations(const std::string &digits)
   for (int letter = 0; letter < digits.size(); letter++)
   {
     // If any one of the input letters is not a valid number, abort the operation
-    if (!isNumber(digits[letter]))
+    if (!isNumber(digits.at(letter)))
     {
-      std::cout << "  invalid input" << std::endl;
-
       return {};
     }
   }
@@ -59,53 +62,47 @@ std::vector<std::string> letterCombinations(const std::string &digits)
   std::vector<std::string> solution;
   std::vector<std::vector<char>> letters;
 
-  // Building the permutation vector
+  // Building the construction data for the solution vector
   for (int i = 0; i < digits.size(); i++)
   {
-    // Adds each vector of letters to the letters vector
-    letters.push_back(returnLetters(digits[i]));
+    // Adds each vector of letters to 'letters'
+    letters.push_back(returnLetters(digits.at(i)));
   }
 
-  // TODO: build the solution vector
-  // dbg
-  std::cout << '[';
-  for (int i = 0; i < letters.size(); i++)
+  // Building the solution vector using the construction data
+  // (This only works for a permutation depth of 2)
+  // Iterating over the letters of the first vector
+  for (int i = 0; i < letters.at(0).size(); i++)
   {
-    std::cout << '[';
-    for (int j = 0; j < letters[i].size(); j++)
+    // Building the components for permutation depth 1
+    std::string depth1 = "";
+    depth1 += letters.at(0).at(i);
+
+    bool pushDepth1 = true;
+
+    // Iterating over the rest of the vectors
+    for (int j = 1; j < letters.size(); j++)
     {
-      std::cout << letters[i][j];
-      if (j < letters[i].size() - 1)
+      // Iterating over all letters of the vectors
+      for (int k = 0; k < letters.at(j).size(); k++)
       {
-        std::cout << ',';
+        // Building the components for permutation depth 2
+        std::string depth2 = "";
+        depth2 += letters.at(0).at(i);
+        depth2 += letters.at(j).at(k);
+        solution.push_back(depth2);
+
+        pushDepth1 = false;
       }
     }
-    std::cout << ']';
-    if (i < letters.size() - 1)
+
+    if (pushDepth1)
     {
-      std::cout << ',';
+      solution.push_back(depth1);
     }
   }
-  std::cout << ']';
-  std::cout << std::endl << "letters.size:" << letters.size();
-  std::cout << std::endl << "letters[0].size:" << letters[0].size() << std::endl;
-  // /dbg
 
-  int iteration = 0;
-
-  // Puts the number of solution strings into 'iteration'
-  for (int i = 0; i < letters.size(); i++)
-  {
-    iteration += letters[i].size();
-  }
-  
-  for (int i = 0; i < iteration; i++)
-  {
-    
-  }
-  
-
-  return {"af", "fa"};
+  return solution;
 }
 
 void printVector(const std::vector<std::string> &vector)
@@ -115,7 +112,7 @@ void printVector(const std::vector<std::string> &vector)
   // Prints all the strings in the vector
   for (int i = 0; i < vector.size(); i++)
   {
-    std::cout << vector[i];
+    std::cout << vector.at(i);
 
     // Only prints the separator if it's not the very last vector element
     if (i < vector.size() - 1)
@@ -138,29 +135,30 @@ void test(int testID, std::string input, std::vector<std::string> expected)
     printVector(expected);
     std::cout << " got:";
     printVector(result);
-    std::cout << std::endl;
+    std::cout << "\n";
   }
   else
   {
-    std::cout << testID << " passed" << std::endl;
+    std::cout << testID << " passed" << "\n";
   }
 }
 
 int main()
 {
-  std::cout << std::endl;
+  std::cout << "\n";
 
   // Tests from leetcode.com
   test(0, "23", {"ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf"});
   test(1, "", {});
   test(2, "2", {"a", "b", "c"});
 
-  // TODO: write my own tests
+  // TODO: write more of my own tests
   // My own tests
   test(3, "2b3", {});
   test(4, "1001", {});
+  test(5, "32", {"ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf"});
 
-  std::cout << std::endl;
+  std::cout << "\n";
 
   return 0;
 }

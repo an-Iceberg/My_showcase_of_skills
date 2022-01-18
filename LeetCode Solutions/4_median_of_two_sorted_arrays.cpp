@@ -47,11 +47,11 @@ void test(int testIndex, std::vector<int> vector1, std::vector<int> vector2, int
 {
     if (median != findMedianOfTwoSortedArrays(vector1, vector2))
     {
-        std::cout << testIndex << " failed, returned:" << findMedianOfTwoSortedArrays(vector1, vector2) << " expected:" << median << std::endl;
+        std::cout << testIndex << " failed, returned:" << findMedianOfTwoSortedArrays(vector1, vector2) << " expected:" << median << "\n";
     }
     else
     {
-        std::cout << testIndex << " passed" << std::endl;
+        std::cout << testIndex << " passed" << "\n";
     }
 }
 
