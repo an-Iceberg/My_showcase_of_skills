@@ -103,76 +103,116 @@ public:
 
 		// Changing modes via arrow keys
 		if (eMode == MOVE && GetKey(olc::RIGHT).bPressed)
+		{
 			eMode = VERTEX;
+		}
 		else if (eMode == VERTEX && GetKey(olc::RIGHT).bPressed)
+		{
 			eMode = EDGE;
+		}
 		else if (eMode == EDGE && GetKey(olc::RIGHT).bPressed)
+		{
 			eMode = DIJKSTRA;
+		}
 		else if (eMode == DIJKSTRA && GetKey(olc::LEFT).bPressed)
+		{
 			eMode = EDGE;
+		}
 		else if (eMode == EDGE && GetKey(olc::LEFT).bPressed)
+		{
 			eMode = VERTEX;
+		}
 		else if (eMode == VERTEX && GetKey(olc::LEFT).bPressed)
+		{
 			eMode = MOVE;
+		}
 
 		switch (eMode)
 		{
 		case MOVE: // Move vertices
 			if (GetMouse(0).bPressed)
+			{
 				SelectVertex();
+			}
 
 			if (GetMouse(0).bHeld)
+			{
 				MoveVertex();
+			}
 
 			if (GetMouse(0).bReleased)
+			{
 				pSelectedVertex = nullptr;
+			}
 
 			break;
 
 		case VERTEX:											// Vertex creation/deletion
 			if (vVertices.size() < 100 && GetMouse(0).bPressed) // Max number of vertices: 99
+			{
 				CreateNewVertex();
+			}
 
 			if (GetMouse(1).bPressed)
+			{
 				DeleteVertex();
+			}
 
 			break;
 
 		case EDGE: // Edge creation/deletion
 			if (GetMouse(0).bPressed)
+			{
 				CreateNewEdge();
+			}
 
 			if (GetMouse(1).bPressed)
+			{
 				DeleteEdge();
+			}
 
 			break;
 
 		case DIJKSTRA: // Dijkstra's shortest path
 			if (GetMouse(0).bPressed)
+			{
 				SetStart();
+			}
 
 			if (GetMouse(1).bPressed)
+			{
 				SetEnd();
+			}
 
 			if (GetKey(olc::ENTER).bReleased)
+			{
 				Dijkstra();
+			}
 
 			break;
 		}
 
 		// User definable edge length
 		if (iEdgeLength > 1 && GetKey(olc::A).bPressed)
+		{
 			iEdgeLength--;
+		}
 
 		if (iEdgeLength < 20 && GetKey(olc::D).bPressed)
+		{
 			iEdgeLength++;
+		}
 
 		// Changeable radius
 		if (iRadius < 20 && GetKey(olc::UP).bPressed)
+		{
 			iRadius++;
+		}
 
 		if (iRadius > 12 && GetKey(olc::DOWN).bPressed)
+		{
 			iRadius--;
+		}
 
 		// Clear graph
 		if (!vVertices.empty() && GetKey(olc::BACK).bPressed)
@@ -182,7 +222,9 @@ public:
 		}
 
 		if (!vPath.empty() && bChangeHasOccured)
+		{
 			vPath.clear();
+		}
 	}
 
 	// Detects ovelap between two vertices and applies froce pushing them away from each other
@@ -267,12 +309,18 @@ public:
 			if (eMode == DIJKSTRA)
 			{
 				if (EdgeIsInPath(edge.source, edge.target))
+				{
 					DrawLine(sx, sy, tx, ty, olc::GREEN);
+				}
 				else
+				{
 					DrawLine(sx, sy, tx, ty, olc::MAGENTA);
+				}
 			}
 			else
+			{
 				DrawLine(sx, sy, tx, ty, olc::MAGENTA);
+			}
 
 			FillTriangle(x1, y1, x2, y2, x3, y3, olc::MAGENTA);
 			FillTriangle(x1, y1, x2, y2, x4, y4, olc::MAGENTA);
@@ -286,21 +334,33 @@ public:
 			if (eMode == DIJKSTRA)
 			{
 				if (VertexIsInPath(vertex.id))
+				{
 					FillCircle(vertex.px, vertex.py, iRadius, olc::GREEN);
+				}
 				else
+				{
 					FillCircle(vertex.px, vertex.py, iRadius, olc::Pixel(255, 128, 0));
+				}
 			}
 			else
+			{
 				FillCircle(vertex.px, vertex.py, iRadius, olc::Pixel(255, 128, 0));
+			}
 
 			// The selected circle is highlighted magenta
 			if (vertex.id == iSelectedVertex)
+			{
 				FillCircle(vertex.px, vertex.py, iRadius, olc::MAGENTA);
+			}
 
 			if (vertex.id > 9)
+			{
 				DrawString(vertex.px - 15.0f, vertex.py - 7.0f, std::to_string(vertex.id), olc::BLACK, 2);
+			}
 			else
+			{
 				DrawString(vertex.px - 7.0f, vertex.py - 7.0f, std::to_string(vertex.id), olc::BLACK, 2);
+			}
 		}
 
 		if (eMode == DIJKSTRA)
@@ -308,10 +368,14 @@ public:
 			for (auto const &vertex : vVertices)
 			{
 				if (vertex.id == iStart)
+				{
 					DrawString(vertex.px - 40, vertex.py - 32.0f, "Start", olc::CYAN, 2);
+				}
 
 				if (vertex.id == iEnd)
+				{
 					DrawString(vertex.px - 24, vertex.py - 32.0f, "End", olc::CYAN, 2);
+				}
 			}
 		}
 
@@ -324,11 +388,17 @@ public:
 	bool EdgeIsInPath(int sid, int tid)
 	{
 		if (vPath.empty())
+		{
 			return false;
+		}
 
 		for (int i = 0; i < vPath.size() - 1; i++)
+		{
 			if (sid == vPath[i] && tid == vPath[i + 1])
+			{
 				return true;
+			}
+		}
 
 		return false;
 	}
@@ -337,8 +407,12 @@ public:
 	bool VertexIsInPath(int id)
 	{
 		for (auto const &point : vPath)
+		{
 			if (point == id)
+			{
 				return true;
+			}
+		}
 
 		return false;
 	}
@@ -347,8 +421,12 @@ public:
 	void SetStart()
 	{
 		for (auto const &vertex : vVertices)
+		{
 			if (IsPointInCircle(vertex.px, vertex.py, iRadius, GetMouseX(), GetMouseY()))
+			{
 				iStart = vertex.id;
+			}
+		}
 
 		bChangeHasOccured = true;
 	}
@@ -357,8 +435,12 @@ public:
 	void SetEnd()
 	{
 		for (auto const &vertex : vVertices)
+		{
 			if (IsPointInCircle(vertex.px, vertex.py, iRadius, GetMouseX(), GetMouseY()))
+			{
 				iEnd = vertex.id;
+			}
+		}
 
 		bChangeHasOccured = true;
 	}
@@ -367,8 +449,12 @@ public:
 	bool containsPoint(int _node, std::list<sPoint> nodes)
 	{
 		for (auto const &node : nodes)
+		{
 			if (node.id == _node)
+			{
 				return true;
+			}
+		}
 
 		return false;
 	}
@@ -379,7 +465,9 @@ public:
 		for (auto const &node : nodes)
 		{
 			if (_node == node)
+			{
 				return true;
+			}
 		}
 
 		return false;
@@ -390,7 +478,9 @@ public:
 	void Dijkstra()
 	{
 		if (iStart == -1 || iEnd == -1)
+		{
 			return;
+		}
 
 		std::stack<int> stack;
 		std::vector<int> exclusionNodes;
@@ -407,37 +497,45 @@ public:
 		{
 			std::cout << "size:" + stack.size() << ' ' << "top:" + stack.top() << ' '; // dbg
 			for (auto const &n : exclusionNodes)									   // dbg
+			{
 				std::cout << n << ',';												   // dbg
-			std::cout << std::endl;													   // dbg
+			}
+			std::cout << '\n';													   // dbg
 
 			hasChildren = false;
 
 			// If the node is in exclusionNodes, pop it
 			if (containsNode(stack.top(), exclusionNodes))
+			{
 				stack.pop();
+			}
 
 			// If one of its children is in dijkstra or is iEnd, move it to dijkstra
 			for (auto const &edge : vEdges)
-
+			{
 				if (edge.source == stack.top())
-
+				{
 					if (containsPoint(edge.target, dijkstra) || edge.target == iEnd)
 					{
 						dijkstra.push_back(sPoint(stack.top(), iEnd, INT_MAX));
 						stack.pop();
 						//continue;
 					}
+				}
+			}
 
 			// If the node is in neither lists, push its children onto the stack
 			if (!containsNode(stack.top(), exclusionNodes) && !containsPoint(stack.top(), dijkstra))
-
+			{
 				for (auto const &edge : vEdges)
-
+				{
 					if (edge.source == stack.top())
 					{
 						hasChildren = true;
 						stack.push(edge.target);
 					}
+				}
+			}
 
 			// If it has no children and it's not iEnd, pop it without consequence
 			if (!hasChildren && stack.top() != iEnd)
@@ -449,43 +547,55 @@ public:
 
 		std::cout << "Graph:";			   // dbg
 		for (auto const &point : dijkstra) // dbg
+		{
 			std::cout << point.id << ' ';  // dbg
-		std::cout << std::endl;			   // dbg
+		}
+		std::cout << '\n';			   // dbg
 
 		// Dijkstra's shortest path construction data
 		for (auto &point : dijkstra)
 		{
 			if (point.visited)
+			{
 				continue;
+			}
 
 			point.visited = true;
 
 			for (auto const &edge : vEdges)
-
+			{
 				// for all neighbours that are a source
 				if (edge.source == point.id)
-
+				{
 					for (auto &_point : dijkstra)
-
+					{
 						// for all neighbours that are a source to this point
 						if (edge.target == _point.id)
-
+						{
 							// Check all sources for distance, if shorter then update them accordingly
 							if (_point.distance > point.distance + edge.length)
 							{
 								_point.distance = point.distance + edge.length;
 								_point.parent = point.id;
 							}
+						}
+					}
+				}
+			}
 		}
 
 		std::list<sPoint>::iterator listIterator = dijkstra.begin();
 
 		while (listIterator->id != iEnd)
+		{
 			listIterator++;
+		}
 
 		// Clear the stack
 		while (!stack.empty())
+		{
 			stack.pop();
+		}
 
 		int parent;
 
@@ -493,7 +603,9 @@ public:
 		{
 			// This prevents an infinite loop
 			if (listIterator->parent == iEnd)
+			{
 				break;
+			}
 
 			stack.push(listIterator->id);
 
@@ -502,7 +614,9 @@ public:
 			listIterator = --dijkstra.end();
 
 			while (listIterator->id != parent)
+			{
 				listIterator--;
+			}
 		}
 
 		listIterator = dijkstra.begin();
@@ -516,8 +630,10 @@ public:
 
 		std::cout << "Path:";			// dbg
 		for (auto const &point : vPath) // dbg
+		{
 			std::cout << point << ' ';	// dbg
-		std::cout << std::endl;			// dbg
+		}
+		std::cout << '\n';			// dbg
 
 		bChangeHasOccured = false;
 	}
@@ -527,8 +643,12 @@ public:
 	float GetX(int id)
 	{
 		for (auto const &vertex : vVertices)
+		{
 			if (vertex.id == id)
+			{
 				return vertex.px;
+			}
+		}
 	}
 
 	// TODO: account for void return value
@@ -536,8 +656,12 @@ public:
 	float GetY(int id)
 	{
 		for (auto const &vertex : vVertices)
+		{
 			if (vertex.id == id)
+			{
 				return vertex.py;
+			}
+		}
 	}
 
 	// The vertex clicked on by the user is marked as selected
@@ -546,12 +670,13 @@ public:
 		pSelectedVertex = nullptr;
 
 		for (auto &vertex : vVertices)
-
+		{
 			if (IsPointInCircle(vertex.px, vertex.py, iRadius, GetMouseX(), GetMouseY()))
 			{
 				pSelectedVertex = &vertex;
 				break;
 			}
+		}
 	}
 
 	// The selected vertex follows the position of the mouse cursor
@@ -582,8 +707,9 @@ public:
 		for (auto &vertex : vVertices)
 		{
 			if (!IsPointInCircle(vertex.px, vertex.py, iRadius, GetMouseX(), GetMouseY()))
-
+			{
 				bGoodMousePosition = true;
+			}
 
 			else
 			{
@@ -596,7 +722,9 @@ public:
 
 		// Creates appropriate id
 		while (sIndices.count(id) > 0)
+		{
 			id++;
+		}
 
 		if (bGoodMousePosition)
 		{
@@ -615,21 +743,23 @@ public:
 		int _id = -1;
 
 		for (int i = 0; i < vVertices.size(); i++)
-
+		{
 			if (IsPointInCircle(vVertices[i].px, vVertices[i].py, iRadius, GetMouseX(), GetMouseY()))
 			{
 				_id = vVertices[i].id;
 				vVertices.erase(vVertices.begin() + i);
 				sIndices.erase(_id);
 			}
+		}
 
 		for (int i = 0; i < vEdges.size(); i++)
-
+		{
 			if (vEdges[i].source == _id || vEdges[i].target == _id)
 			{
 				vEdges.erase(vEdges.begin() + i);
 				i--;
 			}
+		}
 
 		bChangeHasOccured = true;
 	}
@@ -643,17 +773,19 @@ public:
 		{
 
 			for (auto &vertex : vVertices)
-
+			{
 				if (IsPointInCircle(vertex.px, vertex.py, iRadius, GetMouseX(), GetMouseY()))
+				{
 					iSelectedVertex = vertex.id;
+				}
+			}
 		}
 		else
 		{
 			for (auto &vertex : vVertices)
-
+			{
 				// Don't create an edge from the vertex to itself
 				if (vertex.id != iSelectedVertex)
-
 					if (IsPointInCircle(vertex.px, vertex.py, iRadius, GetMouseX(), GetMouseY()))
 					{
 						for (auto const &edge : vEdges)
@@ -674,6 +806,7 @@ public:
 
 						vEdges.push_back(sEdge(iSelectedVertex, vertex.id, iEdgeLength));
 					}
+			}
 
 			iSelectedVertex = -1;
 		}
@@ -685,14 +818,18 @@ public:
 	void DeleteEdge()
 	{
 		for (auto const &vertex : vVertices)
-
+		{
 			if (IsPointInCircle(vertex.px, vertex.py, iRadius, GetMouseX(), GetMouseY()))
-
+			{
 				for (int i = 0; i < vEdges.size(); i++)
-
+				{
 					if (vEdges[i].source == iSelectedVertex && vEdges[i].target == vertex.id)
-
+					{
 						vEdges.erase(vEdges.begin() + i);
+					}
+				}
+			}
+		}
 
 		iSelectedVertex = -1;
 		bChangeHasOccured = true;
@@ -714,7 +851,11 @@ public:
 int main()
 {
 	GraphingTool demo;
+
 	if (demo.Construct(1280, 720, 1, 1))
+	{
 		demo.Start();
+	}
+
 	return 0;
 }
