@@ -2,7 +2,6 @@
 #include "olcPixelGameEngine.h"
 #include <set>
 #include <stack>
-#include <list>
 #include <vector>
 #include <limits>
 
@@ -345,16 +344,9 @@ public:
 
 			// TODO: refactor these drawing routines to be more concise and efficient; we are using too many if statements
 			// Drawing the edges (color depends on mode and whether it's in the path)
-			if (eMode == DIJKSTRA)
+			if (eMode == DIJKSTRA && EdgeIsInPath(edge.source, edge.target))
 			{
-				if (EdgeIsInPath(edge.source, edge.target))
-				{
-					DrawLine(sourceX, sourceY, targetX, targetY, olc::GREEN);
-				}
-				else
-				{
-					DrawLine(sourceX, sourceY, targetX, targetY, olc::MAGENTA);
-				}
+				DrawLine(sourceX, sourceY, targetX, targetY, olc::GREEN);
 			}
 			else
 			{
@@ -363,6 +355,8 @@ public:
 
 			FillTriangle(x1, y1, x2, y2, x3, y3, olc::MAGENTA);
 			FillTriangle(x1, y1, x2, y2, x4, y4, olc::MAGENTA);
+
+			// Draws the length of the edge in the centre of the edge
 			DrawString((sourceX + targetX) / 2.0f - 8.0f, (sourceY + targetY) / 2.0f - 8.0f, std::to_string(edge.length), olc::CYAN, 2);
 		}
 
@@ -370,16 +364,9 @@ public:
 		for (auto const &vertex : vVertices)
 		{
 			// Drawing the vertices (color depends on mode and whether it's in the path)
-			if (eMode == DIJKSTRA)
+			if (eMode == DIJKSTRA && VertexIsInPath(vertex.id))
 			{
-				if (VertexIsInPath(vertex.id))
-				{
-					FillCircle(vertex.positionX, vertex.positionY, iRadius, olc::GREEN);
-				}
-				else
-				{
-					FillCircle(vertex.positionX, vertex.positionY, iRadius, olc::Pixel(255, 128, 0));
-				}
+				FillCircle(vertex.positionX, vertex.positionY, iRadius, olc::GREEN);
 			}
 			else
 			{
