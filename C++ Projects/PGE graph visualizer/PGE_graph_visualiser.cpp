@@ -3,7 +3,8 @@
 #include <set>
 #include <stack>
 #include <vector>
-#include <limits>
+#include <climits>
+#include <algorithm>
 
 enum Mode
 {
@@ -41,19 +42,18 @@ struct sEdge
 	}
 };
 
-// This might no longer be necessary
 struct sPoint
 {
 	int id;
 	int parent;
-	int distance;
+	int distanceToParent;
 	bool visited;
 
-	sPoint(int _id, int _parent, int _distance)
+	sPoint(int _id, int _parent, int distance_to_parent)
 	{
 		id = _id;
 		parent = _parent;
-		distance = _distance;
+		distanceToParent = distance_to_parent;
 		visited = false;
 	}
 };
@@ -481,34 +481,6 @@ public:
 		bChangeHasOccured = true;
 	}
 
-	// Returns true, if the list contains the point
-	bool containsPoint(int const &_node, std::list<sPoint> const &nodes)
-	{
-		for (auto const &node : nodes)
-		{
-			if (node.id == _node)
-			{
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	// Returns true, if the vector contains the node
-	bool containsNode(int const &_node, std::vector<int> const &nodes)
-	{
-		for (auto const &node : nodes)
-		{
-			if (_node == node)
-			{
-				return true;
-			}
-		}
-
-		return false;
-	}
-
 	// Puts the shortest path between the selected start and end point into vPath
 	void Dijkstra()
 	{
@@ -517,7 +489,103 @@ public:
 			return;
 		}
 
-		// 	TODO: implement dijkstra's shortest path
+		// TODO: implement dijkstra's shortest path
+		std::vector<sPoint> vDijkstra;
+
+		// Pushes each as a point onto vDijkstra
+		for (auto const &vertex : vVertices)
+		{
+			if (vertex.id == iStart)
+			{
+				vDijkstra.push_back(sPoint(vertex.id, iStart, 0));
+			}
+
+			int parent = -1;
+			int distanceToParent = INT_MAX;
+
+			// Finds the edge with the shortest distance
+			for (auto const &edge : vEdges)
+			{
+				if (edge.target == vertex.id)
+				{
+					if (edge.length < distanceToParent)
+					{
+						parent = edge.source;
+					}
+				}
+			}
+
+			vDijkstra.push_back(sPoint(vertex.id, parent, distanceToParent));
+		}
+
+		// Dijkstra's shortest path
+		int i = 0;
+		int currentPoint = iStart;
+		std::stack<int> children;
+		while (i < 100)
+		{
+			// Finds all the children of the current vertex
+			for (auto const &edge : vEdges)
+			{
+				if (edge.source == currentPoint)
+				{
+					children.push(edge.target);
+				}
+			}
+
+			sPoint *thisPoint;
+			for (auto &point : vDijkstra)
+			{
+				if (point.id == currentPoint)
+				{
+					thisPoint = &point;
+				}
+			}
+
+			// Update the distance value of the current vertex
+			int parentId = thisPoint->parent;
+			int distanceToParent = thisPoint->distanceToParent;
+			int parentPointDistance = -1;
+			int distanceBetweenParentAndCurrent = -1;
+
+			// Getting the parent's distance
+			for (auto const &point : vDijkstra)
+			{
+				if (point.id == parentId)
+				{
+					parentPointDistance = point.distanceToParent;
+				}
+			}
+
+			// Getting the distance between the current point and the parent
+			for (auto const &edge : vEdges)
+			{
+				if (edge.source == parentId && edge.target == currentPoint)
+				{
+					distanceBetweenParentAndCurrent = edge.length;
+				}
+			}
+
+			if (parentPointDistance + distanceBetweenParentAndCurrent < distanceToParent)
+			{
+				// Adjust the distance
+				for (auto &point : vDijkstra)
+				{
+					if (point.id == currentPoint)
+					{
+						point.distanceToParent = distanceToParent;
+					}
+				}
+			}
+
+			currentPoint = children.top();
+			children.pop();
+		}
+
+		for (auto const &point : vDijkstra)
+		{
+			vPath.push_back(point.id);
+		}
 
 		bChangeHasOccured = false;
 	}
