@@ -4,7 +4,7 @@
 #include <stack>
 #include <vector>
 #include <climits>
-#include <algorithm>
+#include <queue>
 
 enum Mode
 {
@@ -96,6 +96,28 @@ private:
 public:
 	bool OnUserCreate() override
 	{
+		// Debug data, remove when deploying to production
+		vVertices = {
+			sVertex(789, 511, 0),
+			sVertex(533, 393, 1),
+			sVertex(279, 258, 2),
+			sVertex(500, 177, 3),
+			sVertex(740, 286, 4)
+		};
+
+		vEdges = {
+			sEdge(2, 3, 1),
+			sEdge(3, 1, 1),
+			sEdge(1, 4, 1),
+			sEdge(4, 0, 1),
+			sEdge(2, 1, 3),
+			sEdge(1, 0, 3),
+			sEdge(3, 4, 3)
+		};
+
+		iStart = 2;
+		iEnd = 0;
+		eMode = DIJKSTRA;
 		return true;
 	}
 
@@ -458,10 +480,12 @@ public:
 			if (IsPointInCircle(vertex.positionX, vertex.positionY, iRadius, mouseX, mouseY))
 			{
 				iStart = vertex.id;
+				bChangeHasOccured = true;
+				return;
 			}
 		}
 
-		bChangeHasOccured = true;
+		bChangeHasOccured = false;
 	}
 
 	// The user right-clicks on a vertex, setting it as the ending point of dijkstra's shortest path
@@ -475,15 +499,18 @@ public:
 			if (IsPointInCircle(vertex.positionX, vertex.positionY, iRadius, mouseX, mouseY))
 			{
 				iEnd = vertex.id;
+				bChangeHasOccured = true;
+				return;
 			}
 		}
 
-		bChangeHasOccured = true;
+		bChangeHasOccured = false;
 	}
 
 	// Puts the shortest path between the selected start and end point into vPath
 	void Dijkstra()
 	{
+		// If either the beginning or end are not set, return
 		if (iStart == -1 || iEnd == -1)
 		{
 			return;
@@ -492,99 +519,162 @@ public:
 		// TODO: implement dijkstra's shortest path
 		std::vector<sPoint> vDijkstra;
 
-		// Pushes each as a point onto vDijkstra
+		// The starting node gets pushed onto vDijkstra first
+		vDijkstra.push_back(sPoint(iStart, iStart, 0));
+
+		// Pushes each vertex as a point onto vDijkstra
 		for (auto const &vertex : vVertices)
 		{
+			// Skip the starting node
 			if (vertex.id == iStart)
 			{
-				vDijkstra.push_back(sPoint(vertex.id, iStart, 0));
+				continue;
 			}
 
-			int parent = -1;
-			int distanceToParent = INT_MAX;
+			vDijkstra.push_back(sPoint(vertex.id, -1, 10000));
+		}
 
-			// Finds the edge with the shortest distance
-			for (auto const &edge : vEdges)
+		std::stack<int> children; // The immediate children who's distance needs to be updated
+		std::queue<int> nextPoints; // The next points to visit
+		int currentPoint = iStart;
+
+		// Dijkstra's shortest path algorithm implementation
+		for (int i = 0; i < vDijkstra.size(); i++)
+		{
+			// Set the current point to visited
+			for (auto &point : vDijkstra)
 			{
-				if (edge.target == vertex.id)
+				if (point.id == currentPoint)
 				{
-					if (edge.length < distanceToParent)
-					{
-						parent = edge.source;
-					}
+					point.visited == true;
 				}
 			}
 
-			vDijkstra.push_back(sPoint(vertex.id, parent, distanceToParent));
-		}
-
-		// Dijkstra's shortest path
-		int i = 0;
-		int currentPoint = iStart;
-		std::stack<int> children;
-		while (i < 100)
-		{
-			// Finds all the children of the current vertex
+			// Find all the children of the current point
 			for (auto const &edge : vEdges)
 			{
 				if (edge.source == currentPoint)
 				{
 					children.push(edge.target);
-				}
-			}
 
-			sPoint *thisPoint;
-			for (auto &point : vDijkstra)
-			{
-				if (point.id == currentPoint)
-				{
-					thisPoint = &point;
-				}
-			}
-
-			// Update the distance value of the current vertex
-			int parentId = thisPoint->parent;
-			int distanceToParent = thisPoint->distanceToParent;
-			int parentPointDistance = -1;
-			int distanceBetweenParentAndCurrent = -1;
-
-			// Getting the parent's distance
-			for (auto const &point : vDijkstra)
-			{
-				if (point.id == parentId)
-				{
-					parentPointDistance = point.distanceToParent;
-				}
-			}
-
-			// Getting the distance between the current point and the parent
-			for (auto const &edge : vEdges)
-			{
-				if (edge.source == parentId && edge.target == currentPoint)
-				{
-					distanceBetweenParentAndCurrent = edge.length;
-				}
-			}
-
-			if (parentPointDistance + distanceBetweenParentAndCurrent < distanceToParent)
-			{
-				// Adjust the distance
-				for (auto &point : vDijkstra)
-				{
-					if (point.id == currentPoint)
+					// Only enqueuing the children if they have not already been visited
+					for (auto const &point : vDijkstra)
 					{
-						point.distanceToParent = distanceToParent;
+						if (point.id == edge.target && point.visited == false)
+						{
+							nextPoints.push(point.id);
+						}
 					}
 				}
 			}
 
-			currentPoint = children.top();
-			children.pop();
+			// Update the distance and parent of each child
+			while (!children.empty())
+			{
+				// Find the current child
+				for (auto &point : vDijkstra)
+				{
+					if (point.id == children.top())
+					{
+						// Distance of the current point
+						int *distanceOfCurrent;
+						for (auto &point : vDijkstra)
+						{
+							if (point.id == currentPoint)
+							{
+								distanceOfCurrent = &point.distanceToParent;
+							}
+						}
+
+						// Distance to the child
+						int *distanceToChild;
+						for (auto &edge : vEdges)
+						{
+							if (edge.source == currentPoint && edge.target == children.top())
+							{
+								distanceToChild = &edge.length;
+							}
+						}
+
+						// Distance of the child
+						int *distanceOfChild;
+						for (auto &point : vDijkstra)
+						{
+							if (point.id == children.top())
+							{
+								distanceOfChild = &point.distanceToParent;
+							}
+						}
+
+						// Update the distance of the child
+						if (*distanceOfCurrent + *distanceToChild < *distanceOfChild)
+						{
+							*distanceOfChild = *distanceOfCurrent + *distanceToChild;
+
+							// Update the parent of the child
+							for (auto &point : vDijkstra)
+							{
+								if (point.id == children.top())
+								{
+									point.parent = currentPoint;
+								}
+							}
+						}
+					}
+				}
+
+				children.pop();
+			}
+
+			// If there are no more children to visit, abort the algorithm
+			if (nextPoints.empty())
+			{
+				break;
+			}
+
+			// Moving on to the next point and removing it from the queue
+			currentPoint = nextPoints.front();
+			nextPoints.pop();
 		}
 
-		for (auto const &point : vDijkstra)
+		// Since we need to follow the path backwards through vDijkstra, we need to inverse the entire path before we can insert it into vPath
+		// Reusing the previous variables
+		currentPoint = iEnd;
+
+		std::stack<int> path;
+
+		path.push(currentPoint);
+
+		// Pushing all points onto the stack
+		for (int i = 0; i < vDijkstra.size(); i++)
 		{
-			vPath.push_back(point.id);
+			// Finding the parent of currentPoint
+			for (auto const &point : vDijkstra)
+			{
+				// iStart has itself as its parent
+				// if (point.parent == iStart && point.id == iStart)
+				// {
+				// 	break;
+				// }
+
+				// Setting the parent id to be the current point
+				if (point.id == currentPoint)
+				{
+					currentPoint = point.parent;
+
+					// The parent was found, no need to search any further
+					break;
+				}
+			}
+
+			path.push(currentPoint);
+		}
+
+		while (!path.empty())
+		{
+			vPath.push_back(path.top());
+
+			path.pop();
 		}
 
 		bChangeHasOccured = false;
