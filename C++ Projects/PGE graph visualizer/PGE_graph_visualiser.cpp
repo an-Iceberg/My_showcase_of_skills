@@ -507,6 +507,7 @@ public:
 		bChangeHasOccured = false;
 	}
 
+	// TODO: Refactor a lot of this; there are too many for loops in place
 	// Puts the shortest path between the selected start and end point into vPath
 	void Dijkstra()
 	{
@@ -516,7 +517,6 @@ public:
 			return;
 		}
 
-		// TODO: implement dijkstra's shortest path
 		std::vector<sPoint> vDijkstra;
 
 		// The starting node gets pushed onto vDijkstra first
