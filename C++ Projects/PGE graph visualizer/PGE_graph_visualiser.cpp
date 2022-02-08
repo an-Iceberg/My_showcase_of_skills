@@ -98,26 +98,70 @@ public:
 	{
 		// Debug data, remove when deploying to production
 		vVertices = {
-			sVertex(789, 511, 0),
-			sVertex(533, 393, 1),
-			sVertex(279, 258, 2),
-			sVertex(500, 177, 3),
-			sVertex(740, 286, 4)
+			sVertex(258, 467, 0),
+			sVertex(474, 627, 1),
+			sVertex(53, 663, 2),
+			sVertex(461, 353, 3),
+			sVertex(325, 146, 4),
+			sVertex(232, 311, 5),
+			sVertex(53, 461, 6),
+			sVertex(568, 488, 7),
+			sVertex(744, 441, 8),
+			sVertex(564, 241, 9),
+			sVertex(454, 63, 10),
+			sVertex(830, 91, 11),
+			sVertex(880, 317, 12),
+			sVertex(1211, 59, 13),
+			sVertex(1176, 462, 14),
+			sVertex(855, 608, 15),
+			sVertex(1216, 182, 16)
 		};
 
 		vEdges = {
-			sEdge(2, 3, 1),
-			sEdge(3, 1, 1),
-			sEdge(1, 4, 1),
-			sEdge(4, 0, 1),
-			sEdge(2, 1, 3),
-			sEdge(1, 0, 3),
-			sEdge(3, 4, 3)
+			sEdge(13, 16, 1),
+			sEdge(16, 14, 1),
+			sEdge(14, 15, 1),
+			sEdge(12, 11, 1),
+			sEdge(11, 10, 1),
+			sEdge(9, 8, 1),
+			sEdge(8, 7, 1),
+			sEdge(7, 3, 1),
+			sEdge(4, 5, 1),
+			sEdge(5, 0, 1),
+			sEdge(0, 1, 1),
+			sEdge(6, 2, 1),
+			sEdge(1, 6, 2),
+			sEdge(10, 9, 2),
+			sEdge(3, 4, 2),
+			sEdge(15, 12, 2),
+			sEdge(14, 12, 4),
+			sEdge(12, 10, 4),
+			sEdge(12, 10, 4),
+			sEdge(9, 3, 4),
+			sEdge(3, 5, 4),
+			sEdge(0, 6, 4),
+			sEdge(1, 2, 4),
+			sEdge(16, 12, 5),
+			sEdge(8, 3, 5),
+			sEdge(14, 8, 5),
+			sEdge(5, 6, 6),
+			sEdge(16, 11, 7),
+			sEdge(12, 8, 7),
+			sEdge(10, 4, 9),
+			sEdge(7, 1, 8),
+			sEdge(15, 1, 10),
+			sEdge(15, 8, 9),
+			sEdge(3, 0, 7),
+			sEdge(7, 0, 8),
+			sEdge(13, 11, 7)
 		};
 
-		iStart = 2;
-		iEnd = 0;
+		sIndices = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
+
+		iStart = 12;
+		iEnd = 2;
 		eMode = DIJKSTRA;
+
 		return true;
 	}
 
@@ -538,8 +582,11 @@ public:
 		std::queue<int> nextPoints; // The next points to visit
 		int currentPoint = iStart;
 
+		// TODO: not all points are marked as visited
+		// TODO: the queue is not being emptied properly
+		// TODO: iteration count is unnecessarily high
 		// Dijkstra's shortest path algorithm implementation
-		for (int i = 0; i < vDijkstra.size(); i++)
+		for (int i = 0; i < vDijkstra.size() * 2; i++)
 		{
 			// Set the current point to visited
 			for (auto &point : vDijkstra)
