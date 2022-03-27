@@ -585,6 +585,7 @@ public:
 		// TODO: not all points are marked as visited
 		// TODO: the queue is not being emptied properly
 		// TODO: iteration count is unnecessarily high
+		// TODO: !! for paths that are too long it sometimes gives faulty results
 		// Dijkstra's shortest path algorithm implementation
 		for (int i = 0; i < vDijkstra.size() * 2; i++)
 		{
@@ -623,8 +624,11 @@ public:
 				{
 					if (point.id == children.top())
 					{
-						// Distance of the current point
 						int *distanceOfCurrent;
+						int *distanceToChild;
+						int *distanceOfChild;
+
+						// Distance of the current point
 						for (auto &point : vDijkstra)
 						{
 							if (point.id == currentPoint)
@@ -634,7 +638,6 @@ public:
 						}
 
 						// Distance to the child
-						int *distanceToChild;
 						for (auto &edge : vEdges)
 						{
 							if (edge.source == currentPoint && edge.target == children.top())
@@ -644,7 +647,6 @@ public:
 						}
 
 						// Distance of the child
-						int *distanceOfChild;
 						for (auto &point : vDijkstra)
 						{
 							if (point.id == children.top())
@@ -717,6 +719,7 @@ public:
 			path.push(currentPoint);
 		}
 
+		// Copying the path onto vPath
 		while (!path.empty())
 		{
 			vPath.push_back(path.top());
