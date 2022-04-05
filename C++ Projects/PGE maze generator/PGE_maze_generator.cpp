@@ -20,14 +20,17 @@ class MazeGenerator : public olc::PixelGameEngine
 			EAST
 		};
 
-		// ? In pixels or in maze cells? (probably maze cells)
+		// Maze width in maze cells
 		int iMazeWidth;
 
-		// ? In pixels or in maze cells? (probably maze cells)
+		// Maze height in maze cells
 		int iMazeHeight;
 
-		int iPathWidth; // Path width in pixels
-		std::vector<Direction> vMaze; // Vector of directions
+		// Path width in pixels
+		int iPathWidth;
+
+		// Vector of directions
+		std::vector<Direction> vMaze;
 
 		int iVisitedCells;
 
@@ -60,19 +63,40 @@ class MazeGenerator : public olc::PixelGameEngine
 		// TODO: generate new maze when pressing enter key
 		bool OnUserUpdate(float fElapsedTime) override
 		{
-			// Updating the maze
+			// Generate new maze upon pressing the ENTER key
+			if (GetKey(olc::Key::ENTER).bPressed)
+			{
+				iVisitedCells = 1;
+
+				// Clearing the stack of all elements
+				while (!iStack.empty())
+				{
+					iStack.pop();
+				}
+
+				// Setting all maze cell's directions to NOT_SET
+				for (int element = 0; element < vMaze.size(); element++)
+				{
+					vMaze[element] = NOT_SET;
+				}
+
+				// The top leftmost cell is going to be the starting point for the maze
+				iStack.push(std::make_pair(0, 0));
+			}
+
+			// As long as there are unvisited cells
 			if (iVisitedCells < iMazeWidth * iMazeHeight)
 			{
-				std::vector<int> iNeighbours;
+				std::vector<int> vValidNeighbours;
 
-				// checks if neighbours exist and if they have been visited
-				CheckNeighbours(iNeighbours);
+				// Checks if neighbours exist and if they have been visited
+				CheckForValidNeighbours(vValidNeighbours);
 
 				// If there are unvisited neighbours
-				if (!iNeighbours.empty())
+				if (!vValidNeighbours.empty())
 				{
-				  // Choose a random neighbour
-					int iNextCellDirection = iNeighbours[rand() % iNeighbours.size()];
+				  // Choosing a random neighbour from all valid neighbours
+					int iNextCellDirection = vValidNeighbours[rand() % vValidNeighbours.size()];
 
 					switch (iNextCellDirection)
 					{
@@ -83,17 +107,17 @@ class MazeGenerator : public olc::PixelGameEngine
 
 						// West
 						case 2:
-						  ChangeValueAndPush(-1, 0, WEST);
+							ChangeValueAndPush(-1, 0, WEST);
 						break;
 
 						// South
 						case 3:
-						  ChangeValueAndPush(0, 1, SOUTH);
+							ChangeValueAndPush(0, 1, SOUTH);
 						break;
 
 						// East
 						case 4:
-						  ChangeValueAndPush(1, 0, EAST);
+							ChangeValueAndPush(1, 0, EAST);
 						break;
 					}
 
@@ -105,6 +129,7 @@ class MazeGenerator : public olc::PixelGameEngine
 				}
 			}
 
+			// TODO: create function DrawEmptyMaze to be reused elsewhere
 			// Drawing the maze
 			Clear(olc::VERY_DARK_BLUE);
 
@@ -170,83 +195,104 @@ class MazeGenerator : public olc::PixelGameEngine
 			return true;
 		}
 
-		// Functions
-		void CheckNeighbours(std::vector<int>& neighbour)
+		/**
+		 * @brief Returns an array of valid directions to choose from.
+		 * Accounts for the edge-case of maze cells on the literal edge of the maze
+		 * returning directions that would lead outside the maze.
+		 *
+		 * @param neighbours Vector with all valid directions to choose from
+		 */
+		void CheckForValidNeighbours(std::vector<int>& neighbours)
 		{
-			// North
+			// Check for valid northern neighbour
 			if (iStack.top().second > 0)
 			{
-				CheckNeighbour(0, -1, NORTH, neighbour);
+				CheckNeighbour(0, -1, NORTH, neighbours);
 			}
 
-			// West
+			// Check for valid western neighbour
 			if (iStack.top().first > 0)
 			{
-				CheckNeighbour(-1, 0, WEST, neighbour);
+				CheckNeighbour(-1, 0, WEST, neighbours);
 			}
 
-			// South
+			// Check for valid southern neighbour
 			if (iStack.top().second < iMazeWidth - 1)
 			{
-				CheckNeighbour(0, 1, SOUTH, neighbour);
+				CheckNeighbour(0, 1, SOUTH, neighbours);
 			}
 
-			// East
+			// Check for valid eastern neighbour
 			if (iStack.top().first < iMazeHeight - 1)
 			{
-				CheckNeighbour(1, 0, EAST, neighbour);
+				CheckNeighbour(1, 0, EAST, neighbours);
 			}
 		}
 
-		void CheckNeighbour(int x, int y, int direction, std::vector<int>& vector)
+		/**
+		 * @brief If the neighbour's direction is not set, push the 'direction' parameter onto the 'neighbours' vector.
+		 *
+		 * @param x North/south neighbour indicator
+		 * @param y East/west neighbour indicator
+		 * @param direction The direction the neighbour is currently facing
+		 * @param neighbours Vector with all valid directions to choose from
+		 */
+		void CheckNeighbour(int x, int y, int direction, std::vector<int>& neighbours)
 		{
 			if (vMaze[Position(x, y)] == NOT_SET)
 			{
-				vector.push_back(direction);
+				neighbours.push_back(direction);
 			}
 		}
 
+		// ... and pushes a new pair onto the stack
+		// Only changes direction values if they were NOT_SET before
 		void ChangeValueAndPush(int x, int y, Direction direction)
 		{
-			if(vMaze[Position(0, 0)] == 0)
+			// ? why do we check for the top element?
+			if(vMaze[Position(0, 0)] == NOT_SET)
 			{
 				vMaze[Position(0, 0)] = direction;
 			}
 
+			// * This can be refactored, we can write the direction directly into vMaze
+			// * This has only visual consequences, the program logic won't be affected by this
 			switch (direction)
 			{
 				case 1:
-					if(vMaze[Position(x, y)] == 0)
+					if(vMaze[Position(x, y)] == NOT_SET)
 					{
 						vMaze[Position(x, y)] = SOUTH;
 					}
 				break;
 
 				case 2:
-					if (vMaze[Position(x, y)] == 0)
+					if (vMaze[Position(x, y)] == NOT_SET)
 					{
 						vMaze[Position(x, y)] = EAST;
 					}
 				break;
 
 				case 3:
-					if (vMaze[Position(x, y)] == 0)
+					if (vMaze[Position(x, y)] == NOT_SET)
 					{
 						vMaze[Position(x, y)] = NORTH;
 					}
 				break;
 
 				case 4:
-					if (vMaze[Position(x, y)] == 0)
+					if (vMaze[Position(x, y)] == NOT_SET)
 					{
 						vMaze[Position(x, y)] = WEST;
 					}
 				break;
 			}
 
+			// ? why do we only push the coordinates onto the stack?
 			iStack.push(std::make_pair(iStack.top().first + x, iStack.top().second + y));
 		}
 
+		// Returns the position of a cell in vMaze (basically converts a pair to a single integer)
 		int Position(int x, int y)
 		{
 			return (iStack.top().second + y) * iMazeWidth + (iStack.top().first + x);
@@ -255,8 +301,8 @@ class MazeGenerator : public olc::PixelGameEngine
 
 int main()
 {
-	MazeGenerator demo;
-	if (demo.Construct(200, 200, 4, 4))
-		demo.Start();
+	MazeGenerator instance;
+	if (instance.Construct(200, 200, 4, 4))
+		instance.Start();
 	return 0;
 }
