@@ -21,20 +21,21 @@ class MazeGenerator : public olc::PixelGameEngine
 		};
 
 		// Maze width in maze cells
-		int iMazeWidth;
+		int i_MazeWidth;
 
 		// Maze height in maze cells
-		int iMazeHeight;
+		int i_MazeHeight;
 
 		// Path width in pixels
-		int iPathWidth;
+		int i_PathWidth;
 
 		// Vector of directions
-		std::vector<Direction> vMaze;
+		std::vector<Direction> v_Maze;
 
-		int iVisitedCells;
+		int i_VisitedCells;
 
-		std::stack<std::pair<int, int>> iStack;
+		// Contains all maze cells who's direction has not yet been set
+		std::stack<std::pair<int, int>> i_Stack;
 
 	public:
 		bool OnUserCreate() override
@@ -43,156 +44,166 @@ class MazeGenerator : public olc::PixelGameEngine
 			srand(time(nullptr));
 
 			// TODO OPTIONAL: make maze width and height user adjustable
-			iMazeHeight = 50;
-			iMazeWidth = 50;
+			i_MazeHeight = 50;
+			i_MazeWidth = 50;
 
-			for (int i = 0; i < iMazeWidth * iMazeHeight; i++)
+			// Set all the maze cells to have no direction
+			for (int i = 0; i < i_MazeWidth * i_MazeHeight; i++)
 			{
-				vMaze.push_back(NOT_SET);
+				v_Maze.push_back(NOT_SET);
 			}
 
-			iStack.push(std::make_pair(0, 0));
-			iVisitedCells = 1;
+			i_Stack.push(std::make_pair(0, 0));
 
-			iPathWidth = 3;
+			i_VisitedCells = 1;
+
+			i_PathWidth = 3;
 
 			return true;
 		}
 
-		// TODO: user adjustable maze creation speed delay
-		// TODO: generate new maze when pressing enter key
+		// TODO: user adjustable maze drawing speed delay
 		bool OnUserUpdate(float fElapsedTime) override
 		{
-			// Generate new maze upon pressing the ENTER key
+			// Generate new maze when ENTER key is pressed
 			if (GetKey(olc::Key::ENTER).bPressed)
 			{
-				iVisitedCells = 1;
-
-				// Clearing the stack of all elements
-				while (!iStack.empty())
-				{
-					iStack.pop();
-				}
+				i_VisitedCells = 1;
 
 				// Setting all maze cell's directions to NOT_SET
-				for (int element = 0; element < vMaze.size(); element++)
+				for (int element = 0; element < v_Maze.size(); element++)
 				{
-					vMaze[element] = NOT_SET;
+					v_Maze[element] = NOT_SET;
 				}
 
 				// The top leftmost cell is going to be the starting point for the maze
-				iStack.push(std::make_pair(0, 0));
+				i_Stack.push(std::make_pair(0, 0));
 			}
 
 			// As long as there are unvisited cells
-			if (iVisitedCells < iMazeWidth * iMazeHeight)
+			if (i_VisitedCells < i_MazeWidth * i_MazeHeight)
 			{
-				std::vector<int> vValidNeighbours;
+				std::vector<int> v_ValidNeighbours;
 
-				// Checks if neighbours exist and if they have been visited
-				CheckForValidNeighbours(vValidNeighbours);
+				// Checks if neighbours exist and if their direction has been set
+				CheckForValidNeighbours(v_ValidNeighbours);
 
-				// If there are unvisited neighbours
-				if (!vValidNeighbours.empty())
+				// If there are neighbours who's direction is not yet set
+				if (!v_ValidNeighbours.empty())
 				{
 				  // Choosing a random neighbour from all valid neighbours
-					int iNextCellDirection = vValidNeighbours[rand() % vValidNeighbours.size()];
+					int i_NextCellDirection = v_ValidNeighbours[rand() % v_ValidNeighbours.size()];
 
-					switch (iNextCellDirection)
+					switch (i_NextCellDirection)
 					{
 						// North
 						case 1:
-							ChangeValueAndPush(0, -1, NORTH);
+							ChangeDirectionAndPush(0, -1, NORTH);
 						break;
 
 						// West
 						case 2:
-							ChangeValueAndPush(-1, 0, WEST);
+							ChangeDirectionAndPush(-1, 0, WEST);
 						break;
 
 						// South
 						case 3:
-							ChangeValueAndPush(0, 1, SOUTH);
+							ChangeDirectionAndPush(0, 1, SOUTH);
 						break;
 
 						// East
 						case 4:
-							ChangeValueAndPush(1, 0, EAST);
+							ChangeDirectionAndPush(1, 0, EAST);
 						break;
 					}
 
-					iVisitedCells++;
+					i_VisitedCells++;
 				}
+				// The cell who has been visited/who's direction has been set can be removed from the stack
 				else
 				{
-					iStack.pop();
+					i_Stack.pop();
 				}
 			}
 
-			// TODO: create function DrawEmptyMaze to be reused elsewhere
+			DrawingRoutine();
+
+			return true;
+		}
+
+		/**
+		 * @brief Draws the maze to the screen
+		 */
+		void DrawingRoutine()
+		{
 			// Drawing the maze
 			Clear(olc::VERY_DARK_BLUE);
 
 			// Draws cell positions
-			for (int x = 0; x < iMazeWidth; x++)
+			for (int x = 0; x < i_MazeWidth; x++)
 			{
-				for (int y = 0; y < iMazeHeight; y++)
+				for (int y = 0; y < i_MazeHeight; y++)
 				{
 
 					// Fills in cell positions with cell interior and walls
-					for (int py = 0; py < iPathWidth; py++)
+					for (int py = 0; py < i_PathWidth; py++)
 					{
-						for (int px = 0; px < iPathWidth; px++)
+						for (int px = 0; px < i_PathWidth; px++)
 						{
-							// Cell has been visited
-							if (vMaze[y * iMazeWidth + x] != NOT_SET)
+							int i_XPosition = x * (i_PathWidth + 1) + px;
+							int i_YPosition = y * (i_PathWidth + 1) + py;
+
+							// Cell has a direction
+							if (v_Maze[y * i_MazeWidth + x] != NOT_SET)
 							{
-								Draw(x * (iPathWidth + 1) + px, y * (iPathWidth + 1) + py);
+								Draw(i_XPosition, i_YPosition);
 							}
-							// Cell has not yet been visited
+							// Cell does not have a direction
 							else
 							{
-								Draw(x * (iPathWidth + 1) + px, y * (iPathWidth + 1) + py, olc::BLUE);
+								Draw(i_XPosition, i_YPosition, olc::BLUE);
 							}
 						}
 					}
 
 					// Connects cells by overriding the walls
-					for (int p = 0; p < iPathWidth; p++)
+					for (int p = 0; p < i_PathWidth; p++)
 					{
-						if (vMaze[y * iMazeWidth + x] == SOUTH)
+						// The direction of the current maze cell
+						Direction direction = v_Maze[y * i_MazeWidth + x];
+
+						if (direction == SOUTH)
 						{
-							Draw(x * (iPathWidth + 1) + p, y * (iPathWidth + 1) + iPathWidth);
+							Draw(x * (i_PathWidth + 1) + p, y * (i_PathWidth + 1) + i_PathWidth);
 						}
 
-						if (vMaze[y * iMazeWidth + x] == EAST)
+						if (direction == EAST)
 						{
-							Draw(x * (iPathWidth + 1) + iPathWidth, y * (iPathWidth + 1) + p);
+							Draw(x * (i_PathWidth + 1) + i_PathWidth, y * (i_PathWidth + 1) + p);
 						}
 
-						if (vMaze[y * iMazeWidth + x] == WEST)
+						if (direction == WEST)
 						{
-							Draw(x * (iPathWidth + 1) - 1, y * (iPathWidth + 1) + p);
+							Draw(x * (i_PathWidth + 1) - 1, y * (i_PathWidth + 1) + p);
 						}
 
-						if (vMaze[y * iMazeWidth + x] == NORTH)
+						if (direction == NORTH)
 						{
-							Draw(x * (iPathWidth + 1) + p, y * (iPathWidth + 1) - 1);
+							Draw(x * (i_PathWidth + 1) + p, y * (i_PathWidth + 1) - 1);
 						}
 					}
 				}
 			}
 
 			// Drawing the top of the stack
-			for (int py = 0; py < iPathWidth; py++)
+			for (int py = 0; py < i_PathWidth; py++)
 			{
-				for (int px = 0; px < iPathWidth; px++)
+				for (int px = 0; px < i_PathWidth; px++)
 				{
-					Draw(iStack.top().first * (iPathWidth + 1) + px, iStack.top().second * (iPathWidth + 1) + py, olc::GREEN);
+					Draw(i_Stack.top().first * (i_PathWidth + 1) + px, i_Stack.top().second * (i_PathWidth + 1) + py, olc::GREEN);
 				}
 			}
 
-			return true;
 		}
 
 		/**
@@ -205,25 +216,25 @@ class MazeGenerator : public olc::PixelGameEngine
 		void CheckForValidNeighbours(std::vector<int>& neighbours)
 		{
 			// Check for valid northern neighbour
-			if (iStack.top().second > 0)
+			if (i_Stack.top().second > 0)
 			{
 				CheckNeighbour(0, -1, NORTH, neighbours);
 			}
 
 			// Check for valid western neighbour
-			if (iStack.top().first > 0)
+			if (i_Stack.top().first > 0)
 			{
 				CheckNeighbour(-1, 0, WEST, neighbours);
 			}
 
 			// Check for valid southern neighbour
-			if (iStack.top().second < iMazeWidth - 1)
+			if (i_Stack.top().second < i_MazeWidth - 1)
 			{
 				CheckNeighbour(0, 1, SOUTH, neighbours);
 			}
 
 			// Check for valid eastern neighbour
-			if (iStack.top().first < iMazeHeight - 1)
+			if (i_Stack.top().first < i_MazeHeight - 1)
 			{
 				CheckNeighbour(1, 0, EAST, neighbours);
 			}
@@ -239,63 +250,54 @@ class MazeGenerator : public olc::PixelGameEngine
 		 */
 		void CheckNeighbour(int x, int y, int direction, std::vector<int>& neighbours)
 		{
-			if (vMaze[Position(x, y)] == NOT_SET)
+			if (v_Maze[Position(x, y)] == NOT_SET)
 			{
 				neighbours.push_back(direction);
 			}
 		}
 
+		// ? function is still not entirely clear
 		// ... and pushes a new pair onto the stack
 		// Only changes direction values if they were NOT_SET before
-		void ChangeValueAndPush(int x, int y, Direction direction)
+		void ChangeDirectionAndPush(int x, int y, Direction direction)
 		{
 			// ? why do we check for the top element?
-			if(vMaze[Position(0, 0)] == NOT_SET)
+			if(v_Maze[Position(0, 0)] == NOT_SET)
 			{
-				vMaze[Position(0, 0)] = direction;
+				v_Maze[Position(0, 0)] = direction;
 			}
 
-			// * This can be refactored, we can write the direction directly into vMaze
-			// * This has only visual consequences, the program logic won't be affected by this
-			switch (direction)
+			if (v_Maze[Position(x, y)] == NOT_SET)
 			{
-				case 1:
-					if(vMaze[Position(x, y)] == NOT_SET)
-					{
-						vMaze[Position(x, y)] = SOUTH;
-					}
-				break;
+				// TODO: account for values other than 1, 2, 3 or 4
+				switch (direction)
+				{
+					case 1:
+						v_Maze[Position(x, y)] = SOUTH;
+					break;
 
-				case 2:
-					if (vMaze[Position(x, y)] == NOT_SET)
-					{
-						vMaze[Position(x, y)] = EAST;
-					}
-				break;
+					case 2:
+						v_Maze[Position(x, y)] = EAST;
+					break;
 
-				case 3:
-					if (vMaze[Position(x, y)] == NOT_SET)
-					{
-						vMaze[Position(x, y)] = NORTH;
-					}
-				break;
+					case 3:
+						v_Maze[Position(x, y)] = NORTH;
+					break;
 
-				case 4:
-					if (vMaze[Position(x, y)] == NOT_SET)
-					{
-						vMaze[Position(x, y)] = WEST;
-					}
-				break;
+					case 4:
+						v_Maze[Position(x, y)] = WEST;
+					break;
+				}
 			}
 
 			// ? why do we only push the coordinates onto the stack?
-			iStack.push(std::make_pair(iStack.top().first + x, iStack.top().second + y));
+			i_Stack.push(std::make_pair(i_Stack.top().first + x, i_Stack.top().second + y));
 		}
 
-		// Returns the position of a cell in vMaze (basically converts a pair to a single integer)
+		// Returns the position of a cell in v_Maze (basically converts a pair to a single integer)
 		int Position(int x, int y)
 		{
-			return (iStack.top().second + y) * iMazeWidth + (iStack.top().first + x);
+			return (i_Stack.top().second + y) * i_MazeWidth + (i_Stack.top().first + x);
 		}
 };
 
