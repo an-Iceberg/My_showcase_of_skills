@@ -7,9 +7,13 @@
       "args": [
         "-fdiagnostics-color=always",
         "-g",
-        "${file}",
+        "C:\\Users\\agmar\\Programming\\github repositories\\My_showcase_of_skills\\C++ Projects\\PGE graph visualizer\\PGE_graph_visualiser.cpp",
         "-o",
-        "${fileDirname}\\${fileBasenameNoExtension}.exe",
+        "C:\\Users\\agmar\\Programming\\github repositories\\My_showcase_of_skills\\C++ Projects\\PGE graph visualizer\\PGE_graph_visualiser.exe",
+
+        // Optimization
+        "-O0",
+
         "-static-libstdc++",
         "-lpthread",
         "-lsetupapi",
@@ -25,7 +29,7 @@
         "-std=c++20",
       ],
       "options": {
-        "cwd": "${fileDirname}"
+        "cwd": "C:\\Users\\agmar\\Programming\\github repositories\\My_showcase_of_skills\\C++ Projects\\PGE graph visualizer"
       },
       "problemMatcher": [
         "$gcc"
