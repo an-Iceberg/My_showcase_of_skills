@@ -6,6 +6,7 @@
 #include <vector>
 #include <climits>
 #include <queue>
+#include <unordered_map>
 
 enum Mode
 {
@@ -24,9 +25,9 @@ struct s_Vertex
 	// Constructor
 	s_Vertex(float x, float y, int _id)
 	{
-		positionX = x;
-		positionY = y;
-		id = _id;
+		this->positionX = x;
+		this->positionY = y;
+		this->id = _id;
 	}
 };
 
@@ -43,25 +44,31 @@ struct s_Edge
 	// Constructor
 	s_Edge(int _source, int _target, int _length)
 	{
-		source = _source;
-		target = _target;
-		length = _length;
+		this->source = _source;
+		this->target = _target;
+		this->length = _length;
 	}
 };
 
 struct s_Point
 {
 	int id;
+
+	// The id of the parent
 	int parent;
+
 	int distanceToParent;
 	bool visited;
 
+	// A list of all the children this point has
+	std::vector<s_Point*> children;
+
 	s_Point(int _id, int _parent, int distance_to_parent)
 	{
-		id = _id;
-		parent = _parent;
-		distanceToParent = distance_to_parent;
-		visited = false;
+		this->id = _id;
+		this->parent = _parent;
+		this->distanceToParent = distance_to_parent;
+		this->visited = false;
 	}
 };
 
@@ -142,7 +149,6 @@ public:
 			s_Edge(3, 4, 2),
 			s_Edge(15, 12, 2),
 			s_Edge(14, 12, 4),
-			s_Edge(12, 10, 4),
 			s_Edge(12, 10, 4),
 			s_Edge(9, 3, 4),
 			s_Edge(3, 5, 4),
@@ -285,7 +291,7 @@ public:
 				// Enter key finds the shortest path between start and end vertex
 				if (GetKey(olc::ENTER).bReleased)
 				{
-					FindShortestPathUsingDijkstra();
+					FindShortestPath();
 				}
 			break;
 		}
@@ -318,6 +324,7 @@ public:
 		if (!v_Vertices.empty() && GetKey(olc::BACK).bPressed)
 		{
 			v_Vertices.clear();
+			s_Indices.clear();
 			v_Edges.clear();
 			v_Path.clear();
 			i_Start = -1;
@@ -372,7 +379,7 @@ public:
 		case MOVE: mode = "  move >"; break;
 		case VERTEX: mode = "< vertex >"; break;
 		case EDGE: mode = "< edge >"; break;
-		case DIJKSTRA: mode = "< Dijkstra's shortest path"; break;
+		case DIJKSTRA: mode = "< find shortest path from Start to End"; break;
 		}
 
 		// Drawing the edges with length and direction
@@ -562,9 +569,9 @@ public:
 		b_ChangeHasOccurred = false;
 	}
 
-	// TODO: Refactor a lot of this; there are too many for loops in place
+	// TODO: extensive testing for the path finding
 	// Puts the shortest path between the selected start and end point into v_Path
-	void FindShortestPathUsingDijkstra()
+	void FindShortestPath()
 	{
 		// If either the beginning or end are not set, return
 		if (i_Start == -1 || i_End == -1)
@@ -572,184 +579,65 @@ public:
 			return;
 		}
 
-		std::vector<s_Point> v_Dijkstra;
+		// Construction data for finding the shortest path from i_Start to i_End
+		std::vector<int> path;
+		int length = 0;
+		std::unordered_map<int, std::vector<int>> paths;
 
-		// The starting node gets pushed onto v_Dijkstra first
-		v_Dijkstra.push_back(s_Point(i_Start, i_Start, 0));
+		RecursiveSearchForShortestPath(i_Start, path, length, paths);
 
-		// Pushes each vertex as a point onto v_Dijkstra
-		for (auto const &vertex : v_Vertices)
+		// Finding the shortest among all the paths
+		length = INT_MAX;
+		for(auto const &path : paths)
 		{
-			// Skip the starting node
-			if (vertex.id == i_Start)
+			if (path.first < length)
 			{
-				continue;
+				length = path.first;
 			}
-
-			v_Dijkstra.push_back(s_Point(vertex.id, -1, 10000));
 		}
 
-		// The immediate children who's distance needs to be updated
-		std::stack<int> s_Children;
-
-		// The next points to visit
-		std::queue<int> q_NextPoints;
-
-		int i_CurrentVertex = i_Start;
-
-		// TODO: not all points are marked as visited
-		// TODO: the queue is not being emptied properly
-		// BUG: for paths that are too long the path is not being shown
-		// BUG: all points in v_Dijkstra seem to be unvisited
-		// TODO {OPTIONAL}: maybe implement this using recursion (does appear to be easier to implement)
-		// Dijkstra's shortest path algorithm implementation
-		for (int i = 0; i < v_Dijkstra.size(); i++)
-		{
-			// Set the current point to visited
-			for (auto &point : v_Dijkstra)
-			{
-				if (point.id == i_CurrentVertex)
-				{
-					point.visited == true;
-				}
-			}
-
-			// Find all the children of the current point
-			for (auto const &edge : v_Edges)
-			{
-				if (edge.source == i_CurrentVertex)
-				{
-					s_Children.push(edge.target);
-
-					// Only enqueuing the children if they have not already been visited
-					for (auto const &point : v_Dijkstra)
-					{
-						if (point.id == edge.target && point.visited == false)
-						{
-							q_NextPoints.push(point.id);
-						}
-					}
-				}
-			}
-
-			// Update the distance and parent of each child
-			while (!s_Children.empty())
-			{
-				// Find the current child
-				for (auto &point : v_Dijkstra)
-				{
-					if (point.id == s_Children.top())
-					{
-						int *distanceOfCurrent;
-						int *distanceToChild;
-						int *distanceOfChild;
-
-						// Distance of the current point
-						for (auto &point : v_Dijkstra)
-						{
-							if (point.id == i_CurrentVertex)
-							{
-								distanceOfCurrent = &point.distanceToParent;
-							}
-						}
-
-						// Distance to the child
-						for (auto &edge : v_Edges)
-						{
-							if (edge.source == i_CurrentVertex && edge.target == s_Children.top())
-							{
-								distanceToChild = &edge.length;
-							}
-						}
-
-						// Distance of the child
-						for (auto &point : v_Dijkstra)
-						{
-							if (point.id == s_Children.top())
-							{
-								distanceOfChild = &point.distanceToParent;
-							}
-						}
-
-						// Update the distance of the child
-						if (*distanceOfCurrent + *distanceToChild < *distanceOfChild)
-						{
-							*distanceOfChild = *distanceOfCurrent + *distanceToChild;
-
-							// Update the parent of the child
-							for (auto &point : v_Dijkstra)
-							{
-								if (point.id == s_Children.top())
-								{
-									point.parent = i_CurrentVertex;
-								}
-							}
-						}
-					}
-				}
-
-				s_Children.pop();
-			}
-
-			// If there are no more children to visit, abort the algorithm
-			if (q_NextPoints.empty())
-			{
-				break;
-			}
-
-			// Moving on to the next point and removing it from the queue
-			i_CurrentVertex = q_NextPoints.front();
-			q_NextPoints.pop();
-		}
-
-		// Since we need to follow the path backwards through v_Dijkstra, we need to inverse the entire path before we can insert it into v_Path
-		// Reusing the previous variables
-		i_CurrentVertex = i_End;
-
-		std::stack<int> s_Path;
-
-		s_Path.push(i_CurrentVertex);
-
-		// Pushing all points onto the stack
-		for (int i = 0; i < v_Dijkstra.size(); i++)
-		{
-			// Finding the parent of i_CurrentVertex
-			for (auto const &point : v_Dijkstra)
-			{
-				// i_Start has itself as its parent
-				// if (point.parent == i_Start && point.id == i_Start)
-				// {
-				// 	break;
-				// }
-
-				// Setting the parent id to be the current point
-				if (point.id == i_CurrentVertex)
-				{
-					i_CurrentVertex = point.parent;
-
-					// The parent was found, no need to search any further
-					break;
-				}
-			}
-
-			s_Path.push(i_CurrentVertex);
-		}
-
-		// DEBUGINFO: s_Path is full of -1s when the path is not shown
-
-		// Copying the path onto v_Path
-		while (!s_Path.empty())
-		{
-			v_Path.push_back(s_Path.top());
-
-			s_Path.pop();
-		}
-
-		b_ChangeHasOccurred = false;
+		v_Path = paths[length];
 	}
 
-	// TODO: account for void return value
-	// Returns the position of a vertex in the x axis
+	// A recursive function to find all reachable children using DFS (depth first search)
+	void RecursiveSearchForShortestPath(int vertex, std::vector<int> path, int length, std::unordered_map<int, std::vector<int>> &paths)
+	{
+		// Search v_Edges for certain edges that are important
+		for (auto &edge : v_Edges)
+		{
+			// A valid path from i_Start to i_End has been found
+			if (edge.source == vertex && edge.target == i_End)
+			{
+				// Compute the final lenght of the edge
+				length += edge.length;
+
+				// Pushing the last vertices onto the path
+				path.push_back(edge.source);
+				path.push_back(edge.target);
+
+				// Adding the path with length to the set of valid paths
+				paths[length] = path;
+
+				// Break recursion
+				return;
+			}
+			// An edge has been found
+			else if (edge.source == vertex)
+			{
+				// Push the vertex onto the path
+				path.push_back(edge.source);
+
+				// Increase the length of the path
+				length += edge.length;
+
+				// Continue searching for children recursively
+				RecursiveSearchForShortestPath(edge.target, path, length, paths);
+			}
+		}
+	}
+
+	// TODO: account for not finding vertex id
+	// Returns the position of a vertex on the x axis
 	float GetX(int const &id)
 	{
 		for (auto const &vertex : v_Vertices)
@@ -764,8 +652,8 @@ public:
 		return 0.0f;
 	}
 
-	// TODO: account for void return value
-	// Returns the position of a vertex in the y axis
+	// TODO: account for not finding vertex id
+	// Returns the position of a vertex on the y axis
 	float GetY(int const &id)
 	{
 		for (auto const &vertex : v_Vertices)
